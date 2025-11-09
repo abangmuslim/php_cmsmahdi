@@ -7,8 +7,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/cmsmahdi/includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 
-include PAGES_PATH . 'landing/header.php';
-include PAGES_PATH . 'landing/navbar.php';
 ?>
 
 <div class="container my-5">
@@ -35,4 +33,3 @@ include PAGES_PATH . 'landing/navbar.php';
   </form>
 </div>
 
-<?php include PAGES_PATH . 'landing/footer.php'; ?>

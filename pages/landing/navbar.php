@@ -1,22 +1,16 @@
-<?php
-// ==============================================
-// File: pages/landing/navbar.php
-// Deskripsi: Navigasi utama portal berita
-// ==============================================
-?>
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="<?= url(); ?>"><?= $site_name; ?></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+    <a class="navbar-brand" href="<?= BASE_URL ?>">CMS Mahdi</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarMenu">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a href="<?= url(); ?>" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="<?= url('kategori.php'); ?>" class="nav-link">Kategori</a></li>
-        <li class="nav-item"><a href="<?= url('tentang.php'); ?>" class="nav-link">Tentang</a></li>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>kategori">Kategori</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>tentang">Tentang Kami</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= BASE_URL ?>kontak">Kontak</a></li>
       </ul>
-      <a href="<?= url('views/auth/login.php'); ?>" class="btn btn-outline-primary btn-sm">Login</a>
     </div>
   </div>
 </nav>

@@ -4,8 +4,11 @@
 // Deskripsi: Definisi path absolut untuk seluruh sistem CMSMAHDI
 // ===============================================
 
-define('BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . '/cmsmahdi/');
-define('INCLUDES_PATH', BASE_PATH . 'includes/');
-define('PAGES_PATH', BASE_PATH . 'pages/');
-define('VIEWS_PATH', BASE_PATH . 'views/');
-define('UPLOADS_PATH', BASE_PATH . 'uploads/');
+// Gunakan realpath agar kompatibel di Windows & Linux
+$root_path = realpath(__DIR__ . '/..') . DIRECTORY_SEPARATOR;
+
+define('BASE_PATH', $root_path);
+define('INCLUDES_PATH', BASE_PATH . 'includes' . DIRECTORY_SEPARATOR);
+define('PAGES_PATH', BASE_PATH . 'pages' . DIRECTORY_SEPARATOR);
+define('VIEWS_PATH', BASE_PATH . 'views' . DIRECTORY_SEPARATOR);
+define('UPLOADS_PATH', BASE_PATH . 'uploads' . DIRECTORY_SEPARATOR);

@@ -1,19 +1,31 @@
 # =======================================
-# .htaccess - Proteksi & Routing Umum
+# .htaccess - CMSMAHDI (SEO-friendly URLs)
 # =======================================
 
 Options -Indexes
 
-# Cegah akses langsung ke folder penting
+# Cegah akses langsung ke file penting
 <FilesMatch "(\.sql|\.txt|\.md|\.ini|\.env|\.bak|\.zip|\.rar)$">
     Deny from all
 </FilesMatch>
 
-# Alihkan direktori views, includes, uploads
+# Blok folder sensitif
 RedirectMatch 403 ^/(includes|db|backup|config)/
 
-# URL tanpa index.php (mod_rewrite)
+# Aktifkan mod_rewrite
 RewriteEngine On
+RewriteBase /cmsmahdi/
+
+# ======== SEO Friendly Routing ========
+
+# 1️⃣  Akses artikel via: /artikel/1 atau /artikel/tren-ai-di-2025
+RewriteRule ^artikel/([0-9]+)$ index.php?hal=detilkonten&id=$1 [L,QSA]
+
+# 2️⃣  Akses artikel dengan slug: /artikel/slug-judul
+#     (misal /artikel/tren-ai-di-2025 → ambil dari DB nanti)
+RewriteRule ^artikel/([a-zA-Z0-9-_]+)$ index.php?hal=detilkonten&slug=$1 [L,QSA]
+
+# 3️⃣  Halaman umum (home, kategori, tentang, dst.)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?hal=$1 [L,QSA]

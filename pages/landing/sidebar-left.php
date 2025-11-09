@@ -1,22 +1,17 @@
-<?php
-// ==============================================
-// File: pages/landing/sidebar-left.php
-// Deskripsi: Sidebar kiri portal (kategori, populer)
-// ==============================================
-?>
-<aside class="p-3">
-  <h5>Kategori</h5>
-  <ul class="list-unstyled">
-    <li><a href="#">Nasional</a></li>
-    <li><a href="#">Teknologi</a></li>
-    <li><a href="#">Pendidikan</a></li>
-    <li><a href="#">Olahraga</a></li>
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    Kategori
+  </div>
+  <ul class="list-group list-group-flush">
+    <?php
+    $kategori = $koneksi->query("SELECT * FROM kategori ORDER BY namakategori ASC");
+    while ($kat = $kategori->fetch_assoc()) {
+      echo '<li class="list-group-item">
+              <a href="index.php?halaman=daftarkonten&idkategori=' . $kat['idkategori'] . '">
+                ' . htmlspecialchars($kat['namakategori']) . '
+              </a>
+            </li>';
+    }
+    ?>
   </ul>
-
-  <hr>
-  <h5>Berita Populer</h5>
-  <ul class="list-unstyled">
-    <li><a href="#">Judul berita populer 1</a></li>
-    <li><a href="#">Judul berita populer 2</a></li>
-  </ul>
-</aside>
+</div>

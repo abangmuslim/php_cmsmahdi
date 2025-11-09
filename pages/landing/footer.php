@@ -1,18 +1,29 @@
 <?php
 // ==============================================
 // File: pages/landing/footer.php
-// Deskripsi: Footer publik
+// Deskripsi: Footer portal berita CMSMAHDI
 // ==============================================
 ?>
-<footer class="bg-dark text-light text-center py-4 mt-5">
+<footer class="text-center py-4 mt-5">
   <div class="container">
-    <small>&copy; <?= date('Y'); ?> <?= $site_name; ?> — Portal Berita by <?= $penulis; ?></small>
+    <div class="mb-3">
+      <a href="#"><i class="fab fa-facebook-f mx-2"></i></a>
+      <a href="#"><i class="fab fa-instagram mx-2"></i></a>
+      <a href="#"><i class="fab fa-youtube mx-2"></i></a>
+      <a href="#"><i class="fab fa-tiktok mx-2"></i></a>
+    </div>
+    <p class="mb-0 small">&copy; <?= date('Y'); ?> <?= htmlspecialchars($site_name); ?>. 
+      Semua hak dilindungi. <br>
+      <span class="text-light">Dikelola oleh Pemerintah Kabupaten Asahan.</span>
+    </p>
   </div>
 </footer>
-<script src="<?= BASE_URL; ?>/asset/dist/js/adminlte.min.js"></script>
-<script src="<?= BASE_URL; ?>/asset/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="<?= url('asset/js/bootstrap.bundle.min.js'); ?>"></script>
-<script src="<?= url('asset/js/landing.js'); ?>"></script>
+<!-- JS: Bootstrap, jQuery, AdminLTE -->
+<script src="<?= BASE_URL; ?>/asset/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<?= BASE_URL; ?>/asset/plugins/jquery/jquery.min.js"></script>
+<script src="<?= BASE_URL; ?>/asset/dist/js/adminlte.min.js"></script>
+
+</div> <!-- wrapper -->
 </body>
 </html>

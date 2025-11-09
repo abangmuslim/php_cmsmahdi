@@ -27,6 +27,6 @@ if ($idkonten > 0 && !empty($nama) && !empty($komentar)) {
     }
 }
 
-// Redirect kembali ke halaman detail konten
+// Redirect kembali ke halaman detil konten
 header("Location: detilkonten.php?id=" . $idkonten);
 exit;
