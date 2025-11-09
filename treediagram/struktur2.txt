@@ -1,0 +1,94 @@
+CMSMAHDI/
+│
+├─ pages/
+│  │
+│  ├─ user/                     ← layout untuk role admin (back office)
+│  │  ├─ header.php             ← head, link CSS, judul halaman
+│  │  ├─ navbar.php             ← navigasi atas admin
+│  │  ├─ sidebar.php            ← sidebar menu admin (kelola user, kategori, konten, komentar)
+│  │  └─ footer.php             ← script JS dan footer dashboard
+│  │
+│  ├─ editor/                   ← layout untuk role editor (back office)
+│  │  ├─ header.php
+│  │  ├─ navbar.php
+│  │  ├─ sidebar.php            ← menu lebih sederhana (hanya konten & komentar)
+│  │  └─ footer.php
+│  │
+│  └─ landing/                  ← layout tampilan publik (front office / portal berita)
+│     ├─ header.php             ← head HTML umum, meta tag SEO, CSS portal
+│     ├─ navbar.php             ← menu utama (Home, Kategori, Tentang, Login)
+│     ├─ footer.php             ← footer publik, hak cipta, JS
+│     ├─ sidebar-left.php       ← opsional: daftar kategori, berita populer
+│     └─ sidebar-right.php      ← opsional: widget, tag cloud, iklan, dsb.
+│
+│
+├─ asset/
+│  ├─ dist/                     ← komponen utama AdminLTE (CSS, JS, icons, dsb)
+│  │  ├─ css/
+│  │  ├─ js/
+│  │  └─ img/
+│  │
+│  └─ pluggin/                  ← plugin tambahan AdminLTE (chart, datatables, wysiwyg, dsb)
+│     ├─ datatables/
+│     ├─ chartjs/
+│     └─ summernote/
+│
+│
+├─ views/
+│  │
+│  ├─ auth/                     ← halaman otentikasi (login, register, logout)
+│  │  ├─ login.php              ← form login user (admin/editor)
+│  │  ├─ register.php           ← form pendaftaran (opsional)
+│  │  ├─ logout.php             ← proses logout (hapus session)
+│  │  └─ dblogin.php            ← proses backend login (cek ke DB, set session)
+│  │
+│  ├─ user/                     ← konten dashboard untuk user login (extend dari pages/user atau pages/editor)
+│  │  │
+│  │  ├─ user/
+│  │  │  ├─ dbuser.php          ← logic CRUD user (tambah/edit/hapus)
+│  │  │  ├─ daftaruser.php      ← list user untuk admin
+│  │  │  ├─ tambahuser.php      ← form tambah user
+│  │  │  └─ edituser.php        ← form edit user
+│  │  │
+│  │  ├─ kategori/
+│  │  │  ├─ dbkategori.php
+│  │  │  ├─ daftarkategori.php
+│  │  │  ├─ tambahkategori.php
+│  │  │  └─ editkategori.php
+│  │  │
+│  │  ├─ komentar/
+│  │  │  ├─ dbkomentar.php
+│  │  │  ├─ daftarkomentar.php
+│  │  │  ├─ tambahkomentar.php
+│  │  │  └─ editkomentar.php
+│  │  │
+│  │  ├─ konten/
+│  │  │  ├─ dbkonten.php        ← logic CRUD konten
+│  │  │  ├─ daftarkonten.php
+│  │  │  ├─ tambahkonten.php
+│  │  │  └─ editkonten.php
+│  │  │
+│  │  ├─ dashboardadmin.php     ← dashboard utama untuk admin
+│  │  └─ dashboareditor.php     ← dashboard utama untuk editor
+│  │
+│  └─ landing/                  ← tampilan publik (extend dari pages/landing)
+│     ├─ home.php               ← halaman utama portal (daftar artikel)
+│     ├─ detilkonten.php        ← halaman detail artikel
+│     ├─ kategori.php           ← daftar artikel per kategori
+│     ├─ tentang.php            ← halaman tentang CMS
+│     ├─ kontak.php             ← halaman kontak (opsional)
+│     └─ dbkomentar.php         ← logic komentar publik (insert & tampil)
+│
+│
+├─ database/
+│  └─ cmsmahdi.sql              ← file dump struktur database (opsional)
+│
+├─ uploads/                     ← folder umum penyimpanan (jika dipisah dari views)
+│  ├─ user/
+│  └─ konten/
+│
+├─ dashboard.php                ← pusat halaman backend (routing admin/editor)
+├─ index.php                    ← pusat halaman publik (routing landing)
+├─ koneksi.php                  ← file koneksi database
+├─ config.php                   ← variabel global (misal: base_url, site_name)
+└─ struktur.txt                 ← dokumentasi struktur folder (file ini)

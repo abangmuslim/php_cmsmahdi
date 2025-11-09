@@ -1,0 +1,27 @@
+CMSMAHDI/
+├─ pages/
+│  ├─ editor/
+│  ├─ landing/
+│  └─ user/
+│
+├─ views/
+│  ├─ auth/
+│  ├─ landing/
+│  └─ user/
+│     ├─ user/
+│     ├─ kategori/
+│     ├─ komentar/
+│     ├─ konten/
+│     ├─ dashboardadmin.php
+│     └─ dashboardeditor.php
+│
+├─ includes/
+│
+├─ uploads/
+│  ├─ user/
+│  ├─ konten/
+│  └─ komentar/
+│
+├─ dashboard.php
+├─ index.php
+└─ README.md

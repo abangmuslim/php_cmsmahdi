@@ -1,0 +1,9 @@
+├─ views/
+│  ├─ auth/                     ← halaman otentikasi (login, register, logout)
+│  ├─ user/                     ← konten dashboard untuk user login (extend dari pages/user atau pages/editor)
+│  │  ├─ user/
+│  │  ├─ kategori/
+│  │  ├─ komentar/
+│  │  ├─ konten/
+│  │  ├─ dashboardadmin.php     ← dashboard utama untuk admin
+│  │  └─ dashboardeditor.php    ← dashboard utama untuk editor

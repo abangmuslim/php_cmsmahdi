@@ -1,0 +1,19 @@
+# =======================================
+# .htaccess - Proteksi & Routing Umum
+# =======================================
+
+Options -Indexes
+
+# Cegah akses langsung ke folder penting
+<FilesMatch "(\.sql|\.txt|\.md|\.ini|\.env|\.bak|\.zip|\.rar)$">
+    Deny from all
+</FilesMatch>
+
+# Alihkan direktori views, includes, uploads
+RedirectMatch 403 ^/(includes|db|backup|config)/
+
+# URL tanpa index.php (mod_rewrite)
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?hal=$1 [L,QSA]

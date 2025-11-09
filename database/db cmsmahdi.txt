@@ -1,0 +1,139 @@
+-- ====================================================
+-- DATABASE: cmsmahdi
+-- Sistem CMS dua role: admin & editor
+-- Tanpa underscore, menggunakan bahasa Indonesia
+-- ====================================================
+
+CREATE DATABASE IF NOT EXISTS cmsmahdi CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE cmsmahdi;
+
+-- ====================================================
+-- 1️⃣ Tabel user
+-- Menyimpan data admin dan editor
+-- ====================================================
+CREATE TABLE user (
+  iduser INT AUTO_INCREMENT PRIMARY KEY,
+  namauser VARCHAR(100) NOT NULL,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  role ENUM('admin','editor') DEFAULT 'editor',
+  foto VARCHAR(255) DEFAULT 'default.png',
+  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Dummy data user (10 data)
+INSERT INTO user (namauser, username, password, email, role, foto) VALUES
+('Ahmad Mahdi', 'adminmahdi', MD5('admin123'), 'admin@cmsmahdi.com', 'admin', 'user1.jpg'),
+('Budi Santoso', 'budi', MD5('editor123'), 'budi@cmsmahdi.com', 'editor', 'user2.jpg'),
+('Citra Dewi', 'citra', MD5('editor123'), 'citra@cmsmahdi.com', 'editor', 'user3.jpg'),
+('Dewi Lestari', 'dewi', MD5('editor123'), 'dewi@cmsmahdi.com', 'editor', 'user4.jpg'),
+('Eko Prasetyo', 'eko', MD5('editor123'), 'eko@cmsmahdi.com', 'editor', 'user5.jpg'),
+('Farhan Hadi', 'farhan', MD5('admin123'), 'farhan@cmsmahdi.com', 'admin', 'user6.jpg'),
+('Gita Nur', 'gita', MD5('editor123'), 'gita@cmsmahdi.com', 'editor', 'user7.jpg'),
+('Hendra Saputra', 'hendra', MD5('editor123'), 'hendra@cmsmahdi.com', 'editor', 'user8.jpg'),
+('Indah Sari', 'indah', MD5('editor123'), 'indah@cmsmahdi.com', 'editor', 'user9.jpg'),
+('Joko Susilo', 'joko', MD5('editor123'), 'joko@cmsmahdi.com', 'editor', 'user10.jpg');
+
+-- ====================================================
+-- 2️⃣ Tabel kategori
+-- ====================================================
+CREATE TABLE kategori (
+  idkategori INT AUTO_INCREMENT PRIMARY KEY,
+  namakategori VARCHAR(100) NOT NULL,
+  deskripsi TEXT,
+  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Dummy data kategori
+INSERT INTO kategori (namakategori, deskripsi) VALUES
+('Teknologi', 'Artikel seputar teknologi dan gadget.'),
+('Pendidikan', 'Topik dunia pendidikan dan pembelajaran.'),
+('Kesehatan', 'Informasi kesehatan dan gaya hidup sehat.'),
+('Olahraga', 'Berita olahraga nasional dan internasional.'),
+('Politik', 'Artikel politik dan pemerintahan.'),
+('Ekonomi', 'Isu ekonomi, bisnis, dan keuangan.'),
+('Hiburan', 'Film, musik, dan dunia selebritas.'),
+('Sains', 'Penemuan dan riset ilmiah terbaru.'),
+('Wisata', 'Tempat wisata menarik di Indonesia.'),
+('Kuliner', 'Ulasan makanan dan resep khas daerah.');
+
+-- ====================================================
+-- 3️⃣ Tabel konten
+-- ====================================================
+CREATE TABLE konten (
+  idkonten INT AUTO_INCREMENT PRIMARY KEY,
+  judulkonten VARCHAR(200) NOT NULL,
+  isikonten TEXT NOT NULL,
+  gambar VARCHAR(255),
+  idkategori INT,
+  iduser INT,
+  status ENUM('draft','publik') DEFAULT 'publik',
+  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (idkategori) REFERENCES kategori(idkategori) ON DELETE SET NULL,
+  FOREIGN KEY (iduser) REFERENCES user(iduser) ON DELETE CASCADE
+);
+
+-- Dummy data konten
+INSERT INTO konten (judulkonten, isikonten, gambar, idkategori, iduser, status) VALUES
+('Tren AI di 2025', 'Kecerdasan buatan kini semakin maju...', 'ai2025.jpg', 1, 1, 'publik'),
+('Belajar Efektif di Era Digital', 'Panduan belajar online yang efisien...', 'belajar.jpg', 2, 2, 'publik'),
+('Tips Hidup Sehat', 'Rahasia menjaga kesehatan tubuh...', 'sehat.jpg', 3, 3, 'publik'),
+('Piala Dunia 2025', 'Pertandingan seru antar negara...', 'olahraga.jpg', 4, 4, 'publik'),
+('Analisis Politik 2025', 'Pemilu mendatang akan menjadi...', 'politik.jpg', 5, 5, 'publik'),
+('Perkembangan Ekonomi Global', 'Ekonomi dunia pasca pandemi...', 'ekonomi.jpg', 6, 6, 'publik'),
+('Film Terbaik Tahun Ini', 'Daftar film box office pilihan...', 'film.jpg', 7, 7, 'publik'),
+('Penemuan Ilmiah Terkini', 'Para ilmuwan berhasil menemukan...', 'sains.jpg', 8, 8, 'publik'),
+('Destinasi Wisata Terbaru', 'Tempat wisata baru yang wajib dikunjungi...', 'wisata.jpg', 9, 9, 'publik'),
+('Kuliner Nusantara', 'Ragam kuliner tradisional Indonesia...', 'kuliner.jpg', 10, 10, 'publik');
+
+-- ====================================================
+-- 4️⃣ Tabel komentar
+-- ====================================================
+CREATE TABLE komentar (
+  idkomentar INT AUTO_INCREMENT PRIMARY KEY,
+  idkonten INT,
+  namakomentar VARCHAR(100),
+  email VARCHAR(100),
+  isikomentar TEXT,
+  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('tampil','sembunyi') DEFAULT 'tampil',
+  FOREIGN KEY (idkonten) REFERENCES konten(idkonten) ON DELETE CASCADE
+);
+
+-- Dummy data komentar
+INSERT INTO komentar (idkonten, namakomentar, email, isikomentar, status) VALUES
+(1, 'Rizal', 'rizal@mail.com', 'Artikel yang menarik tentang AI.', 'tampil'),
+(2, 'Tina', 'tina@mail.com', 'Sangat membantu untuk belajar.', 'tampil'),
+(3, 'Susi', 'susi@mail.com', 'Saya suka tips kesehatannya.', 'tampil'),
+(4, 'Rian', 'rian@mail.com', 'Pertandingan kemarin seru!', 'tampil'),
+(5, 'Aldi', 'aldi@mail.com', 'Politiknya makin panas nih.', 'tampil'),
+(6, 'Fitri', 'fitri@mail.com', 'Ekonominya lumayan stabil.', 'tampil'),
+(7, 'Yudi', 'yudi@mail.com', 'Filmnya keren banget!', 'tampil'),
+(8, 'Mega', 'mega@mail.com', 'Penemuan baru yang luar biasa.', 'tampil'),
+(9, 'Anita', 'anita@mail.com', 'Tempat wisatanya menarik.', 'tampil'),
+(10, 'Bambang', 'bambang@mail.com', 'Saya suka kulinernya.', 'tampil');
+
+-- ====================================================
+-- 5️⃣ Tabel logaktivitas (opsional untuk audit)
+-- ====================================================
+CREATE TABLE logaktivitas (
+  idlog INT AUTO_INCREMENT PRIMARY KEY,
+  iduser INT,
+  aktivitas VARCHAR(255),
+  tanggal DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (iduser) REFERENCES user(iduser) ON DELETE CASCADE
+);
+
+-- Dummy data log
+INSERT INTO logaktivitas (iduser, aktivitas) VALUES
+(1, 'Login ke sistem'),
+(2, 'Menambah artikel baru'),
+(3, 'Mengedit artikel'),
+(4, 'Menghapus komentar'),
+(5, 'Menambah kategori'),
+(6, 'Login ke dashboard'),
+(7, 'Mengubah foto profil'),
+(8, 'Menambah komentar baru'),
+(9, 'Logout dari sistem'),
+(10, 'Melihat statistik artikel');

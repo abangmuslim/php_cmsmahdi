@@ -1,0 +1,16 @@
+# ==========================================
+# Keamanan Folder Uploads (Referensi)
+# ==========================================
+Options -Indexes
+
+<FilesMatch "\.(php|php5|phtml|phar|exe|js|sh)$">
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg)$">
+    Allow from all
+</FilesMatch>
+
+<Files ".htaccess">
+    Deny from all
+</Files>

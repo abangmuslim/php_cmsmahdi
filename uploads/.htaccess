@@ -1,0 +1,25 @@
+# ==========================================
+# .htaccess - Keamanan Folder Uploads
+# ==========================================
+
+# Nonaktifkan tampilan isi direktori
+Options -Indexes
+
+# Blok semua file PHP, script, dan file berbahaya
+<FilesMatch "\.(php|php3|php4|php5|phtml|phar|cgi|pl|exe|asp|aspx|js|sh)$">
+    Deny from all
+</FilesMatch>
+
+# Izinkan hanya file gambar dan media aman
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|mp4|mp3|ogg|wav)$">
+    Allow from all
+</FilesMatch>
+
+# Lindungi file .htaccess agar tidak bisa dibaca
+<Files ".htaccess">
+    Deny from all
+</Files>
+
+# Nonaktifkan handler PHP di folder ini
+RemoveHandler .php .phtml .php3 .php4 .php5 .phar
+RemoveType .php .phtml .php3 .php4 .php5 .phar

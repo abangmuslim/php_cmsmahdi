@@ -1,0 +1,19 @@
+# ==========================================
+# Keamanan Root CMSMAHDI (Referensi)
+# ==========================================
+
+# Redirect semua akses langsung ke index.php
+DirectoryIndex index.php
+
+# Blok folder sensitif
+RedirectMatch 403 ^/(includes|database|struktur|pages)/
+
+# Nonaktifkan akses file konfigurasi
+<FilesMatch "(konfig\.php|koneksi\.php|ceksession\.php)$">
+    Deny from all
+</FilesMatch>
+
+# Izinkan akses file publik
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|webp|svg|ico)$">
+    Allow from all
+</FilesMatch>
