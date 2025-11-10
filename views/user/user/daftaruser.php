@@ -1,62 +1,108 @@
 <?php
 // ===============================================
 // File: views/user/user/daftaruser.php
-// Deskripsi: Menampilkan daftar user untuk admin
+// Deskripsi: Daftar User untuk Admin CMSMAHDI
 // ===============================================
 
-require_once '../../../includes/ceksession.php';
-require_once '../../../includes/koneksi.php';
-include '../../../pages/user/header.php';
-include '../../../pages/user/navbar.php';
-include '../../../pages/user/sidebar.php';
+// Load keamanan & koneksi
+require_once dirname(__DIR__, 3) . '/includes/ceksession.php';
+require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
 ?>
 
-<div class="container-fluid px-4">
-  <h3 class="mt-4 mb-3 border-bottom pb-2">Daftar User</h3>
+<!-- =============================================== -->
+<!--  BAGIAN KONTEN (mengikuti struktur AdminLTE)    -->
+<!-- =============================================== -->
+<div class="content-wrapper p-3">
+  <section class="content">
+    <div class="container-fluid">
 
-  <a href="tambahuser.php" class="btn btn-primary mb-3">+ Tambah User</a>
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="m-0">Daftar User</h5>
+          <a href="dashboard.php?hal=user/tambahuser" class="btn btn-light btn-sm">
+            <i class="fa fa-plus"></i> Tambah User
+          </a>
+        </div>
 
-  <table class="table table-bordered table-striped">
-    <thead>
-      <tr class="text-center bg-light">
-        <th>No</th>
-        <th>Nama</th>
-        <th>Username</th>
-        <th>Role</th>
-        <th>Foto</th>
-        <th>Tanggal</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php
-      $no = 1;
-      $sql = "SELECT * FROM tb_user ORDER BY iduser DESC";
-      $hasil = $koneksi->query($sql);
+        <div class="card-body table-responsive">
+          <table class="table table-bordered table-striped align-middle mb-0">
+            <thead class="text-center bg-light">
+              <tr>
+                <th style="width:5%">No</th>
+                <th>Nama</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Foto</th>
+                <th style="width:15%">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $no = 1;
+              $query = "SELECT * FROM user ORDER BY iduser DESC";
+              $hasil = mysqli_query($koneksi, $query);
 
-      while ($data = $hasil->fetch_assoc()):
-      ?>
-        <tr class="align-middle">
-          <td class="text-center"><?= $no++; ?></td>
-          <td><?= htmlspecialchars($data['namauser']); ?></td>
-          <td><?= htmlspecialchars($data['username']); ?></td>
-          <td class="text-center"><?= ucfirst($data['role']); ?></td>
-          <td class="text-center">
-            <?php if ($data['foto']): ?>
-              <img src="../../../uploads/user/<?= $data['foto']; ?>" width="40" class="rounded-circle">
-            <?php else: ?>
-              <span class="text-muted">-</span>
-            <?php endif; ?>
-          </td>
-          <td><?= $data['tanggal']; ?></td>
-          <td class="text-center">
-            <a href="edituser.php?id=<?= $data['iduser']; ?>" class="btn btn-sm btn-warning">Edit</a>
-            <a href="prosesuser.php?aksi=hapus&id=<?= $data['iduser']; ?>" onclick="return confirm('Yakin ingin menghapus user ini?')" class="btn btn-sm btn-danger">Hapus</a>
-          </td>
-        </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
+              while ($data = mysqli_fetch_assoc($hasil)):
+                $foto = !empty($data['foto']) ? $data['foto'] : 'default.png';
+              ?>
+                <tr>
+                  <td class="text-center"><?= $no++; ?></td>
+                  <td><?= htmlspecialchars($data['namauser']); ?></td>
+                  <td><?= htmlspecialchars($data['username']); ?></td>
+                  <td class="text-center">
+                    <span class="badge bg-<?= $data['role'] == 'admin' ? 'danger' : 'success'; ?>">
+                      <?= ucfirst($data['role']); ?>
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <img src="<?= url('uploads/user/' . $foto); ?>" width="40" class="rounded-circle shadow-sm border">
+                  </td>
+                  <td class="text-center">
+                    <!-- Tombol Edit -->
+                    <a href="dashboard.php?hal=user/edituser&id=<?= $data['iduser']; ?>"
+                      class="btn btn-warning btn-sm me-1"
+                      title="Edit">
+                      <i class="fa fa-edit"></i>
+                    </a>
+
+                    <!-- Tombol Hapus -->
+                    <a href="views/user/user/prosesuser.php?aksi=hapus&id=<?= $data['iduser']; ?>"
+                      onclick="return confirm('Yakin ingin menghapus user ini?')"
+                      class="btn btn-danger btn-sm"
+                      title="Hapus">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                  </td>
+
+                </tr>
+              <?php endwhile; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
 </div>
 
-<?php include '../../../pages/user/footer.php'; ?>
+<!-- =============================================== -->
+<!--  STYLE TAMBAHAN KHUSUS UNTUK HALAMAN INI        -->
+<!-- =============================================== -->
+<style>
+  .content-wrapper {
+    background-color: #f4f6f9;
+    min-height: 100vh;
+  }
+
+  table img {
+    border: 2px solid #ddd;
+  }
+
+  @media (max-width: 576px) {
+
+    table th,
+    table td {
+      font-size: 0.8rem;
+    }
+  }
+</style>

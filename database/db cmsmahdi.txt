@@ -1,139 +1,279 @@
--- ====================================================
--- DATABASE: cmsmahdi
--- Sistem CMS dua role: admin & editor
--- Tanpa underscore, menggunakan bahasa Indonesia
--- ====================================================
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Nov 09, 2025 at 01:51 PM
+-- Server version: 8.0.30
+-- PHP Version: 8.3.16
 
-CREATE DATABASE IF NOT EXISTS cmsmahdi CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE cmsmahdi;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- ====================================================
--- 1️⃣ Tabel user
--- Menyimpan data admin dan editor
--- ====================================================
-CREATE TABLE user (
-  iduser INT AUTO_INCREMENT PRIMARY KEY,
-  namauser VARCHAR(100) NOT NULL,
-  username VARCHAR(50) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  email VARCHAR(100) NOT NULL,
-  role ENUM('admin','editor') DEFAULT 'editor',
-  foto VARCHAR(255) DEFAULT 'default.png',
-  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP
-);
 
--- Dummy data user (10 data)
-INSERT INTO user (namauser, username, password, email, role, foto) VALUES
-('Ahmad Mahdi', 'adminmahdi', MD5('admin123'), 'admin@cmsmahdi.com', 'admin', 'user1.jpg'),
-('Budi Santoso', 'budi', MD5('editor123'), 'budi@cmsmahdi.com', 'editor', 'user2.jpg'),
-('Citra Dewi', 'citra', MD5('editor123'), 'citra@cmsmahdi.com', 'editor', 'user3.jpg'),
-('Dewi Lestari', 'dewi', MD5('editor123'), 'dewi@cmsmahdi.com', 'editor', 'user4.jpg'),
-('Eko Prasetyo', 'eko', MD5('editor123'), 'eko@cmsmahdi.com', 'editor', 'user5.jpg'),
-('Farhan Hadi', 'farhan', MD5('admin123'), 'farhan@cmsmahdi.com', 'admin', 'user6.jpg'),
-('Gita Nur', 'gita', MD5('editor123'), 'gita@cmsmahdi.com', 'editor', 'user7.jpg'),
-('Hendra Saputra', 'hendra', MD5('editor123'), 'hendra@cmsmahdi.com', 'editor', 'user8.jpg'),
-('Indah Sari', 'indah', MD5('editor123'), 'indah@cmsmahdi.com', 'editor', 'user9.jpg'),
-('Joko Susilo', 'joko', MD5('editor123'), 'joko@cmsmahdi.com', 'editor', 'user10.jpg');
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- ====================================================
--- 2️⃣ Tabel kategori
--- ====================================================
-CREATE TABLE kategori (
-  idkategori INT AUTO_INCREMENT PRIMARY KEY,
-  namakategori VARCHAR(100) NOT NULL,
-  deskripsi TEXT,
-  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+--
+-- Database: `cmsmahdi`
+--
 
--- Dummy data kategori
-INSERT INTO kategori (namakategori, deskripsi) VALUES
-('Teknologi', 'Artikel seputar teknologi dan gadget.'),
-('Pendidikan', 'Topik dunia pendidikan dan pembelajaran.'),
-('Kesehatan', 'Informasi kesehatan dan gaya hidup sehat.'),
-('Olahraga', 'Berita olahraga nasional dan internasional.'),
-('Politik', 'Artikel politik dan pemerintahan.'),
-('Ekonomi', 'Isu ekonomi, bisnis, dan keuangan.'),
-('Hiburan', 'Film, musik, dan dunia selebritas.'),
-('Sains', 'Penemuan dan riset ilmiah terbaru.'),
-('Wisata', 'Tempat wisata menarik di Indonesia.'),
-('Kuliner', 'Ulasan makanan dan resep khas daerah.');
+-- --------------------------------------------------------
 
--- ====================================================
--- 3️⃣ Tabel konten
--- ====================================================
-CREATE TABLE konten (
-  idkonten INT AUTO_INCREMENT PRIMARY KEY,
-  judulkonten VARCHAR(200) NOT NULL,
-  isikonten TEXT NOT NULL,
-  gambar VARCHAR(255),
-  idkategori INT,
-  iduser INT,
-  status ENUM('draft','publik') DEFAULT 'publik',
-  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (idkategori) REFERENCES kategori(idkategori) ON DELETE SET NULL,
-  FOREIGN KEY (iduser) REFERENCES user(iduser) ON DELETE CASCADE
-);
+--
+-- Table structure for table `kategori`
+--
 
--- Dummy data konten
-INSERT INTO konten (judulkonten, isikonten, gambar, idkategori, iduser, status) VALUES
-('Tren AI di 2025', 'Kecerdasan buatan kini semakin maju...', 'ai2025.jpg', 1, 1, 'publik'),
-('Belajar Efektif di Era Digital', 'Panduan belajar online yang efisien...', 'belajar.jpg', 2, 2, 'publik'),
-('Tips Hidup Sehat', 'Rahasia menjaga kesehatan tubuh...', 'sehat.jpg', 3, 3, 'publik'),
-('Piala Dunia 2025', 'Pertandingan seru antar negara...', 'olahraga.jpg', 4, 4, 'publik'),
-('Analisis Politik 2025', 'Pemilu mendatang akan menjadi...', 'politik.jpg', 5, 5, 'publik'),
-('Perkembangan Ekonomi Global', 'Ekonomi dunia pasca pandemi...', 'ekonomi.jpg', 6, 6, 'publik'),
-('Film Terbaik Tahun Ini', 'Daftar film box office pilihan...', 'film.jpg', 7, 7, 'publik'),
-('Penemuan Ilmiah Terkini', 'Para ilmuwan berhasil menemukan...', 'sains.jpg', 8, 8, 'publik'),
-('Destinasi Wisata Terbaru', 'Tempat wisata baru yang wajib dikunjungi...', 'wisata.jpg', 9, 9, 'publik'),
-('Kuliner Nusantara', 'Ragam kuliner tradisional Indonesia...', 'kuliner.jpg', 10, 10, 'publik');
+CREATE TABLE `kategori` (
+  `idkategori` int NOT NULL,
+  `namakategori` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_general_ci,
+  `tanggalbuat` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ====================================================
--- 4️⃣ Tabel komentar
--- ====================================================
-CREATE TABLE komentar (
-  idkomentar INT AUTO_INCREMENT PRIMARY KEY,
-  idkonten INT,
-  namakomentar VARCHAR(100),
-  email VARCHAR(100),
-  isikomentar TEXT,
-  tanggalbuat DATETIME DEFAULT CURRENT_TIMESTAMP,
-  status ENUM('tampil','sembunyi') DEFAULT 'tampil',
-  FOREIGN KEY (idkonten) REFERENCES konten(idkonten) ON DELETE CASCADE
-);
+--
+-- Dumping data for table `kategori`
+--
 
--- Dummy data komentar
-INSERT INTO komentar (idkonten, namakomentar, email, isikomentar, status) VALUES
-(1, 'Rizal', 'rizal@mail.com', 'Artikel yang menarik tentang AI.', 'tampil'),
-(2, 'Tina', 'tina@mail.com', 'Sangat membantu untuk belajar.', 'tampil'),
-(3, 'Susi', 'susi@mail.com', 'Saya suka tips kesehatannya.', 'tampil'),
-(4, 'Rian', 'rian@mail.com', 'Pertandingan kemarin seru!', 'tampil'),
-(5, 'Aldi', 'aldi@mail.com', 'Politiknya makin panas nih.', 'tampil'),
-(6, 'Fitri', 'fitri@mail.com', 'Ekonominya lumayan stabil.', 'tampil'),
-(7, 'Yudi', 'yudi@mail.com', 'Filmnya keren banget!', 'tampil'),
-(8, 'Mega', 'mega@mail.com', 'Penemuan baru yang luar biasa.', 'tampil'),
-(9, 'Anita', 'anita@mail.com', 'Tempat wisatanya menarik.', 'tampil'),
-(10, 'Bambang', 'bambang@mail.com', 'Saya suka kulinernya.', 'tampil');
+INSERT INTO `kategori` (`idkategori`, `namakategori`, `deskripsi`, `tanggalbuat`) VALUES
+(1, 'Teknologi', 'Artikel seputar teknologi dan gadget.', '2025-11-09 16:35:31'),
+(2, 'Pendidikan', 'Topik dunia pendidikan dan pembelajaran.', '2025-11-09 16:35:31'),
+(3, 'Kesehatan', 'Informasi kesehatan dan gaya hidup sehat.', '2025-11-09 16:35:31'),
+(4, 'Olahraga', 'Berita olahraga nasional dan internasional.', '2025-11-09 16:35:31'),
+(5, 'Politik', 'Artikel politik dan pemerintahan.', '2025-11-09 16:35:31'),
+(6, 'Ekonomi', 'Isu ekonomi, bisnis, dan keuangan.', '2025-11-09 16:35:31'),
+(7, 'Hiburan', 'Film, musik, dan dunia selebritas.', '2025-11-09 16:35:31'),
+(8, 'Sains', 'Penemuan dan riset ilmiah terbaru.', '2025-11-09 16:35:31'),
+(9, 'Wisata', 'Tempat wisata menarik di Indonesia.', '2025-11-09 16:35:31'),
+(10, 'Kuliner', 'Ulasan makanan dan resep khas daerah.', '2025-11-09 16:35:31');
 
--- ====================================================
--- 5️⃣ Tabel logaktivitas (opsional untuk audit)
--- ====================================================
-CREATE TABLE logaktivitas (
-  idlog INT AUTO_INCREMENT PRIMARY KEY,
-  iduser INT,
-  aktivitas VARCHAR(255),
-  tanggal DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (iduser) REFERENCES user(iduser) ON DELETE CASCADE
-);
+-- --------------------------------------------------------
 
--- Dummy data log
-INSERT INTO logaktivitas (iduser, aktivitas) VALUES
-(1, 'Login ke sistem'),
-(2, 'Menambah artikel baru'),
-(3, 'Mengedit artikel'),
-(4, 'Menghapus komentar'),
-(5, 'Menambah kategori'),
-(6, 'Login ke dashboard'),
-(7, 'Mengubah foto profil'),
-(8, 'Menambah komentar baru'),
-(9, 'Logout dari sistem'),
-(10, 'Melihat statistik artikel');
+--
+-- Table structure for table `komentar`
+--
+
+CREATE TABLE `komentar` (
+  `idkomentar` int NOT NULL,
+  `idkonten` int DEFAULT NULL,
+  `namakomentar` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `isikomentar` text COLLATE utf8mb4_general_ci,
+  `tanggalbuat` datetime DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('tampil','sembunyi') COLLATE utf8mb4_general_ci DEFAULT 'tampil'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `komentar`
+--
+
+INSERT INTO `komentar` (`idkomentar`, `idkonten`, `namakomentar`, `email`, `isikomentar`, `tanggalbuat`, `status`) VALUES
+(1, 1, 'Rizal', 'rizal@mail.com', 'Artikel yang menarik tentang AI.', '2025-11-09 16:35:31', 'tampil'),
+(2, 2, 'Tina', 'tina@mail.com', 'Sangat membantu untuk belajar.', '2025-11-09 16:35:31', 'tampil'),
+(3, 3, 'Susi', 'susi@mail.com', 'Saya suka tips kesehatannya.', '2025-11-09 16:35:31', 'tampil'),
+(4, 4, 'Rian', 'rian@mail.com', 'Pertandingan kemarin seru!', '2025-11-09 16:35:31', 'tampil'),
+(5, 5, 'Aldi', 'aldi@mail.com', 'Politiknya makin panas nih.', '2025-11-09 16:35:31', 'tampil'),
+(6, 6, 'Fitri', 'fitri@mail.com', 'Ekonominya lumayan stabil.', '2025-11-09 16:35:31', 'tampil'),
+(7, 7, 'Yudi', 'yudi@mail.com', 'Filmnya keren banget!', '2025-11-09 16:35:31', 'tampil'),
+(8, 8, 'Mega', 'mega@mail.com', 'Penemuan baru yang luar biasa.', '2025-11-09 16:35:31', 'tampil'),
+(9, 9, 'Anita', 'anita@mail.com', 'Tempat wisatanya menarik.', '2025-11-09 16:35:31', 'tampil'),
+(10, 10, 'Bambang', 'bambang@mail.com', 'Saya suka kulinernya.', '2025-11-09 16:35:31', 'tampil');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `konten`
+--
+
+CREATE TABLE `konten` (
+  `idkonten` int NOT NULL,
+  `judulkonten` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
+  `isikonten` text COLLATE utf8mb4_general_ci NOT NULL,
+  `gambar` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `idkategori` int DEFAULT NULL,
+  `iduser` int DEFAULT NULL,
+  `status` enum('draft','publik') COLLATE utf8mb4_general_ci DEFAULT 'publik',
+  `tanggalbuat` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `konten`
+--
+
+INSERT INTO `konten` (`idkonten`, `judulkonten`, `isikonten`, `gambar`, `idkategori`, `iduser`, `status`, `tanggalbuat`) VALUES
+(1, 'Tren AI di 2025', 'Kecerdasan buatan kini semakin maju...', 'ai2025.jpg', 1, 1, 'publik', '2025-11-09 16:35:31'),
+(2, 'Belajar Efektif di Era Digital', 'Panduan belajar online yang efisien...', 'belajar.jpg', 2, 2, 'publik', '2025-11-09 16:35:31'),
+(3, 'Tips Hidup Sehat', 'Rahasia menjaga kesehatan tubuh...', 'sehat.jpg', 3, 3, 'publik', '2025-11-09 16:35:31'),
+(4, 'Piala Dunia 2025', 'Pertandingan seru antar negara...', 'olahraga.jpg', 4, 4, 'publik', '2025-11-09 16:35:31'),
+(5, 'Analisis Politik 2025', 'Pemilu mendatang akan menjadi...', 'politik.jpg', 5, 5, 'publik', '2025-11-09 16:35:31'),
+(6, 'Perkembangan Ekonomi Global', 'Ekonomi dunia pasca pandemi...', 'ekonomi.jpg', 6, 6, 'publik', '2025-11-09 16:35:31'),
+(7, 'Film Terbaik Tahun Ini', 'Daftar film box office pilihan...', 'film.jpg', 7, 7, 'publik', '2025-11-09 16:35:31'),
+(8, 'Penemuan Ilmiah Terkini', 'Para ilmuwan berhasil menemukan...', 'sains.jpg', 8, 8, 'publik', '2025-11-09 16:35:31'),
+(9, 'Destinasi Wisata Terbaru', 'Tempat wisata baru yang wajib dikunjungi...', 'wisata.jpg', 9, 9, 'publik', '2025-11-09 16:35:31'),
+(10, 'Kuliner Nusantara', 'Ragam kuliner tradisional Indonesia...', 'kuliner.jpg', 10, 10, 'publik', '2025-11-09 16:35:31');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `logaktivitas`
+--
+
+CREATE TABLE `logaktivitas` (
+  `idlog` int NOT NULL,
+  `iduser` int DEFAULT NULL,
+  `aktivitas` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tanggal` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `logaktivitas`
+--
+
+INSERT INTO `logaktivitas` (`idlog`, `iduser`, `aktivitas`, `tanggal`) VALUES
+(1, 1, 'Login ke sistem', '2025-11-09 16:35:31'),
+(2, 2, 'Menambah artikel baru', '2025-11-09 16:35:31'),
+(3, 3, 'Mengedit artikel', '2025-11-09 16:35:31'),
+(4, 4, 'Menghapus komentar', '2025-11-09 16:35:31'),
+(5, 5, 'Menambah kategori', '2025-11-09 16:35:31'),
+(6, 6, 'Login ke dashboard', '2025-11-09 16:35:31'),
+(7, 7, 'Mengubah foto profil', '2025-11-09 16:35:31'),
+(8, 8, 'Menambah komentar baru', '2025-11-09 16:35:31'),
+(9, 9, 'Logout dari sistem', '2025-11-09 16:35:31'),
+(10, 10, 'Melihat statistik artikel', '2025-11-09 16:35:31');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `iduser` int NOT NULL,
+  `namauser` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `role` enum('admin','editor') COLLATE utf8mb4_general_ci DEFAULT 'editor',
+  `foto` varchar(255) COLLATE utf8mb4_general_ci DEFAULT 'default.png',
+  `tanggalbuat` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`iduser`, `namauser`, `username`, `password`, `email`, `role`, `foto`, `tanggalbuat`) VALUES
+(1, 'Ahmad Mahdi', 'adminmahdi', '0192023a7bbd73250516f069df18b500', 'admin@cmsmahdi.com', 'admin', 'user1.jpg', '2025-11-09 16:35:31'),
+(2, 'Budi Santoso', 'budi', '50116a1a3b67657572a00ea8c6680cb9', 'budi@cmsmahdi.com', 'editor', 'user2.jpg', '2025-11-09 16:35:31'),
+(3, 'Citra Dewi', 'citra', '50116a1a3b67657572a00ea8c6680cb9', 'citra@cmsmahdi.com', 'editor', 'user3.jpg', '2025-11-09 16:35:31'),
+(4, 'Dewi Lestari', 'dewi', '50116a1a3b67657572a00ea8c6680cb9', 'dewi@cmsmahdi.com', 'editor', 'user4.jpg', '2025-11-09 16:35:31'),
+(5, 'Eko Prasetyo', 'eko', '50116a1a3b67657572a00ea8c6680cb9', 'eko@cmsmahdi.com', 'editor', 'user5.jpg', '2025-11-09 16:35:31'),
+(6, 'Farhan Hadi', 'farhan', '0192023a7bbd73250516f069df18b500', 'farhan@cmsmahdi.com', 'admin', 'user6.jpg', '2025-11-09 16:35:31'),
+(7, 'Gita Nur', 'gita', '50116a1a3b67657572a00ea8c6680cb9', 'gita@cmsmahdi.com', 'editor', 'user7.jpg', '2025-11-09 16:35:31'),
+(8, 'Hendra Saputra', 'hendra', '50116a1a3b67657572a00ea8c6680cb9', 'hendra@cmsmahdi.com', 'editor', 'user8.jpg', '2025-11-09 16:35:31'),
+(9, 'Indah Sari', 'indah', '50116a1a3b67657572a00ea8c6680cb9', 'indah@cmsmahdi.com', 'editor', 'user9.jpg', '2025-11-09 16:35:31'),
+(10, 'Joko Susilo', 'joko', '50116a1a3b67657572a00ea8c6680cb9', 'joko@cmsmahdi.com', 'editor', 'user10.jpg', '2025-11-09 16:35:31');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `kategori`
+--
+ALTER TABLE `kategori`
+  ADD PRIMARY KEY (`idkategori`);
+
+--
+-- Indexes for table `komentar`
+--
+ALTER TABLE `komentar`
+  ADD PRIMARY KEY (`idkomentar`),
+  ADD KEY `idkonten` (`idkonten`);
+
+--
+-- Indexes for table `konten`
+--
+ALTER TABLE `konten`
+  ADD PRIMARY KEY (`idkonten`),
+  ADD KEY `idkategori` (`idkategori`),
+  ADD KEY `iduser` (`iduser`);
+
+--
+-- Indexes for table `logaktivitas`
+--
+ALTER TABLE `logaktivitas`
+  ADD PRIMARY KEY (`idlog`),
+  ADD KEY `iduser` (`iduser`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`iduser`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `kategori`
+--
+ALTER TABLE `kategori`
+  MODIFY `idkategori` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `komentar`
+--
+ALTER TABLE `komentar`
+  MODIFY `idkomentar` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `konten`
+--
+ALTER TABLE `konten`
+  MODIFY `idkonten` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `logaktivitas`
+--
+ALTER TABLE `logaktivitas`
+  MODIFY `idlog` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `iduser` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `komentar`
+--
+ALTER TABLE `komentar`
+  ADD CONSTRAINT `komentar_ibfk_1` FOREIGN KEY (`idkonten`) REFERENCES `konten` (`idkonten`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `konten`
+--
+ALTER TABLE `konten`
+  ADD CONSTRAINT `konten_ibfk_1` FOREIGN KEY (`idkategori`) REFERENCES `kategori` (`idkategori`) ON DELETE SET NULL,
+  ADD CONSTRAINT `konten_ibfk_2` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `logaktivitas`
+--
+ALTER TABLE `logaktivitas`
+  ADD CONSTRAINT `logaktivitas_ibfk_1` FOREIGN KEY (`iduser`) REFERENCES `user` (`iduser`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -1,62 +1,120 @@
 <?php
-// ==============================================
+// ====================================================
 // File: views/auth/login.php
-// Deskripsi: Form login untuk admin/editor
-// ==============================================
+// Deskripsi: Halaman login untuk CMSMAHDI (zona publik)
+// ====================================================
 
-require_once '../../includes/konfig.php';
-require_once '../../includes/koneksi.php';
-session_start();
+require_once __DIR__ . '/../../includes/path.php';
+require_once INCLUDES_PATH . 'konfig.php';
+require_once INCLUDES_PATH . 'koneksi.php';
 
-// Jika sudah login, langsung arahkan ke dashboard
-if (isset($_SESSION['iduser'])) {
-    header("Location: " . url('dashboard.php'));
-    exit;
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
 }
 
-$pesan = '';
-if (isset($_GET['pesan'])) {
-    $pesan = htmlspecialchars($_GET['pesan']);
+// Redirect jika sudah login
+if (isset($_SESSION['role'])) {
+  if ($_SESSION['role'] === 'admin') {
+    header("Location: " . BASE_URL . "dashboard.php");
+    exit();
+  } elseif ($_SESSION['role'] === 'editor') {
+    header("Location: " . BASE_URL . "pages/editor/dashboardeditor.php");
+    exit();
+  }
+}
+
+// Proses login
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $username = trim($_POST['username']);
+  $password = trim($_POST['password']);
+
+  if ($username === '' || $password === '') {
+    $error = "Username dan password wajib diisi.";
+  } else {
+    $stmt = $koneksi->prepare("SELECT * FROM user WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+      $user = $result->fetch_assoc();
+
+      if (md5($password) === $user['password']) {
+        $_SESSION['iduser']    = $user['iduser'];
+        $_SESSION['namauser']  = $user['namauser'];
+        $_SESSION['role']      = $user['role'];
+        $_SESSION['username']  = $user['username'];
+
+        if ($user['role'] === 'admin') {
+          header("Location: " . BASE_URL . "dashboard.php");
+        } else {
+          header("Location: " . BASE_URL . "pages/editor/dashboardeditor.php");
+        }
+        exit();
+      } else {
+        $error = "Password salah.";
+      }
+    } else {
+      $error = "Username tidak ditemukan.";
+    }
+  }
 }
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Login | <?= $site_name; ?></title>
-    <link rel="stylesheet" href="<?= url('asset/css/bootstrap.min.css'); ?>">
-    <link rel="stylesheet" href="<?= url('asset/css/auth.css'); ?>">
-</head>
-<body class="bg-light d-flex align-items-center" style="min-height:100vh;">
 
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-header text-center bg-primary text-white">
-          <h5 class="mb-0">Login <?= $site_name; ?></h5>
-        </div>
-        <div class="card-body">
-          <?php if ($pesan): ?>
-            <div class="alert alert-warning text-center"><?= $pesan; ?></div>
-          <?php endif; ?>
+<!-- ==================================================== -->
+<!-- TAMPILAN LOGIN DENGAN FOOTER SELALU TERLIHAT -->
+<!-- ==================================================== -->
 
-          <form action="proseslogin.php" method="POST">
-            <div class="mb-3">
-              <label for="username" class="form-label">Username</label>
-              <input type="text" name="username" id="username" class="form-control" required autofocus>
+<style>
+  .login-wrapper {
+    min-height: calc(100vh - 180px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 38px;
+    cursor: pointer;
+    color: #888;
+  }
+</style>
+
+<div class="login-wrapper">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4">
+            <h3 class="text-center mb-4">Login CMS Mahdi</h3>
+
+            <?php if (!empty($error)): ?>
+              <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
+
+            <form method="POST" action="<?= BASE_URL ?>index.php?hal=login">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" name="username" id="username" class="form-control" required>
+              </div>
+
+              <div class="mb-3 position-relative">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+                <span class="toggle-password" onclick="togglePassword()">
+                  👁️
+                </span>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+            </form>
+
+            <div class="text-center mt-3">
+              <a href="<?= BASE_URL ?>">← Kembali ke Beranda</a>
             </div>
-
-            <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input type="password" name="password" id="password" class="form-control" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Masuk</button>
-          </form>
-
-          <div class="text-center mt-3">
-            <small>Belum punya akun? <a href="register.php">Daftar</a></small>
           </div>
         </div>
       </div>
@@ -64,5 +122,9 @@ if (isset($_GET['pesan'])) {
   </div>
 </div>
 
-</body>
-</html>
+<script>
+  function togglePassword() {
+    const input = document.getElementById('password');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+</script>

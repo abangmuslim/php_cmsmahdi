@@ -8,13 +8,16 @@ require_once __DIR__ . '/includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 require_once INCLUDES_PATH . 'koneksi.php';
 
-// Tentukan halaman berdasarkan parameter 'hal'
-$halaman = $_GET['hal'] ?? 'home';
+// Mulai sesi untuk deteksi login
+session_start();
 
-// Bersihkan dari ekstensi .php (kalau user ketik kategori.php)
-$halaman = str_replace('.php', '', $halaman);
+// Ambil parameter 'hal' dari URL (misal: ?hal=kategori&id=3)
+$halaman = isset($_GET['hal']) ? trim($_GET['hal']) : 'home';
 
-// Routing file halaman publik
+// Bersihkan nama file dari ekstensi .php atau karakter berbahaya
+$halaman = basename(str_replace('.php', '', $halaman));
+
+// Tentukan path file view berdasarkan parameter halaman
 switch ($halaman) {
   case '':
   case 'home':
@@ -37,16 +40,24 @@ switch ($halaman) {
     $file_view = VIEWS_PATH . 'landing/kontak.php';
     break;
 
+  // 🔐 Halaman login publik (bukan dashboard admin)
+  case 'login':
+    $file_view = VIEWS_PATH . 'auth/login.php';
+    break;
+
+  // Jika halaman tidak dikenali
   default:
     $file_view = VIEWS_PATH . 'landing/404.php';
     break;
 }
 
-// Tampilkan layout landing umum
+// ======================================================
+//  TEMPLATE LANDING: HEADER + NAVBAR + CONTENT + FOOTER
+// ======================================================
 include PAGES_PATH . 'landing/header.php';
 include PAGES_PATH . 'landing/navbar.php';
 
-// Panggil file halaman jika ada
+// Muat file konten utama
 if (file_exists($file_view)) {
   include $file_view;
 } else {

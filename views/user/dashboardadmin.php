@@ -1,136 +1,101 @@
 <?php
-include '../../includes/ceksession.php';
-include '../../includes/koneksi.php';
-include '../../pages/user/header.php';
-include '../../pages/user/navbar.php';
-include '../../pages/user/sidebar.php';
+// =======================================
+// File: views/user/dashboardadmin.php
+// Deskripsi: Tampilan dashboard utama untuk admin CMSMAHDI
+// =======================================
 
-// ambil data untuk statistik
-$total_user     = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM user"))['jml'];
-$total_konten   = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM konten"))['jml'];
-$total_kategori = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM kategori"))['jml'];
-$total_komentar = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM komentar"))['jml'];
+// Asumsi koneksi dan session sudah dimuat dari dashboard.php
 
-// data untuk grafik konten per kategori
-$qkategori = mysqli_query($conn, "
-  SELECT k.namakategori, COUNT(c.idkonten) as jumlah 
-  FROM kategori k LEFT JOIN konten c ON c.idkategori = k.idkategori
-  GROUP BY k.idkategori
+// Statistik ringkas
+$total_user     = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM user"))['jumlah'];
+$total_konten   = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM konten"))['jumlah'];
+$total_kategori = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM kategori"))['jumlah'];
+$total_komentar = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM komentar WHERE status='tampil'"))['jumlah'];
+
+// Grafik konten per kategori
+$hasil_kategori = mysqli_query($koneksi, "
+  SELECT kategori.namakategori, COUNT(konten.idkonten) AS jumlah
+  FROM kategori
+  LEFT JOIN konten ON konten.idkategori = kategori.idkategori
+  GROUP BY kategori.idkategori
 ");
-$labels = [];
-$data = [];
-while ($row = mysqli_fetch_assoc($qkategori)) {
-  $labels[] = $row['namakategori'];
-  $data[] = $row['jumlah'];
+$label_kategori = []; $jumlah_konten = [];
+while ($data = mysqli_fetch_assoc($hasil_kategori)) {
+  $label_kategori[] = $data['namakategori'];
+  $jumlah_konten[] = $data['jumlah'];
 }
 
-// konten & komentar terbaru
-$qkonten = mysqli_query($conn, "SELECT idkonten, judulkonten, tanggal FROM konten ORDER BY tanggal DESC LIMIT 5");
-$qkomentar = mysqli_query($conn, "SELECT nama, isikomentar, tanggal FROM komentar ORDER BY tanggal DESC LIMIT 5");
+// Konten dan komentar terbaru
+$konten_terbaru = mysqli_query($koneksi, "
+  SELECT judulkonten, tanggalbuat 
+  FROM konten 
+  WHERE status='publik' 
+  ORDER BY tanggalbuat DESC 
+  LIMIT 5
+");
+
+$komentar_terbaru = mysqli_query($koneksi, "
+  SELECT namakomentar, isikomentar, tanggalbuat 
+  FROM komentar 
+  WHERE status='tampil' 
+  ORDER BY tanggalbuat DESC 
+  LIMIT 5
+");
 ?>
 
-<!-- Content Wrapper -->
 <div class="content-wrapper p-3">
   <section class="content">
     <div class="container-fluid">
 
       <!-- Statistik Ringkas -->
       <div class="row">
+        <?php
+        $statistik = [
+          ['warna' => 'info', 'jumlah' => $total_user, 'label' => 'Total User', 'ikon' => 'users', 'link' => 'user/daftaruser'],
+          ['warna' => 'success', 'jumlah' => $total_konten, 'label' => 'Total Konten', 'ikon' => 'newspaper', 'link' => 'konten/daftarkonten'],
+          ['warna' => 'warning', 'jumlah' => $total_kategori, 'label' => 'Total Kategori', 'ikon' => 'list', 'link' => 'kategori/daftarkategori'],
+          ['warna' => 'danger', 'jumlah' => $total_komentar, 'label' => 'Total Komentar', 'ikon' => 'comments', 'link' => 'komentar/daftarkomentar'],
+        ];
+        foreach ($statistik as $item) {
+        ?>
         <div class="col-xl-3 col-md-6 col-sm-12 mb-3">
-          <div class="small-box bg-info">
+          <div class="small-box bg-<?= $item['warna'] ?>">
             <div class="inner">
-              <h3><?= $total_user ?></h3>
-              <p>Total User</p>
+              <h3><?= $item['jumlah'] ?></h3>
+              <p><?= $item['label'] ?></p>
             </div>
-            <div class="icon">
-              <i class="fas fa-users"></i>
-            </div>
-            <a href="?page=user/daftaruser" class="small-box-footer">
+            <div class="icon"><i class="fas fa-<?= $item['ikon'] ?>"></i></div>
+            <a href="dashboard.php?hal=<?= $item['link'] ?>" class="small-box-footer">
               Lihat Selengkapnya <i class="fas fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 col-sm-12 mb-3">
-          <div class="small-box bg-success">
-            <div class="inner">
-              <h3><?= $total_konten ?></h3>
-              <p>Total Konten</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-newspaper"></i>
-            </div>
-            <a href="?page=konten/daftarkonten" class="small-box-footer">
-              Lihat Selengkapnya <i class="fas fa-arrow-circle-right"></i>
-            </a>
-          </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 col-sm-12 mb-3">
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h3><?= $total_kategori ?></h3>
-              <p>Total Kategori</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-list"></i>
-            </div>
-            <a href="?page=kategori/daftarkategori" class="small-box-footer">
-              Lihat Selengkapnya <i class="fas fa-arrow-circle-right"></i>
-            </a>
-          </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 col-sm-12 mb-3">
-          <div class="small-box bg-danger">
-            <div class="inner">
-              <h3><?= $total_komentar ?></h3>
-              <p>Total Komentar</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-comments"></i>
-            </div>
-            <a href="?page=komentar/daftarkomentar" class="small-box-footer">
-              Lihat Selengkapnya <i class="fas fa-arrow-circle-right"></i>
-            </a>
-          </div>
-        </div>
+        <?php } ?>
       </div>
 
-      <!-- Grafik & Tabel -->
+      <!-- Grafik dan Tabel Ringkas -->
       <div class="row">
         <!-- Grafik Konten per Kategori -->
         <div class="col-lg-6 col-12 mb-3">
           <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h6 class="m-0">Grafik Konten per Kategori</h6>
-            </div>
-            <div class="card-body">
-              <canvas id="grafikkategori" height="180"></canvas>
-            </div>
+            <div class="card-header bg-primary text-white"><h6 class="m-0">Grafik Konten per Kategori</h6></div>
+            <div class="card-body"><canvas id="grafikkategori" height="180"></canvas></div>
           </div>
         </div>
 
-        <!-- Tabel Ringkas -->
+        <!-- Tabel Konten dan Komentar Terbaru -->
         <div class="col-lg-6 col-12">
           <div class="card shadow-sm mb-3">
-            <div class="card-header bg-success text-white">
-              <h6 class="m-0">Konten Terbaru</h6>
-            </div>
+            <div class="card-header bg-success text-white"><h6 class="m-0">Konten Terbaru</h6></div>
             <div class="card-body p-2">
               <table class="table table-sm table-striped mb-0">
-                <thead>
-                  <tr>
-                    <th>Judul</th>
-                    <th>Tanggal</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Judul</th><th>Tanggal</th></tr></thead>
                 <tbody>
-                  <?php while ($k = mysqli_fetch_assoc($qkonten)) { ?>
-                    <tr>
-                      <td><?= htmlspecialchars($k['judulkonten']) ?></td>
-                      <td><?= date('d/m/Y', strtotime($k['tanggal'])) ?></td>
-                    </tr>
+                  <?php while ($konten = mysqli_fetch_assoc($konten_terbaru)) { ?>
+                  <tr>
+                    <td><?= htmlspecialchars($konten['judulkonten']) ?></td>
+                    <td><?= date('d/m/Y', strtotime($konten['tanggalbuat'])) ?></td>
+                  </tr>
                   <?php } ?>
                 </tbody>
               </table>
@@ -138,25 +103,17 @@ $qkomentar = mysqli_query($conn, "SELECT nama, isikomentar, tanggal FROM komenta
           </div>
 
           <div class="card shadow-sm">
-            <div class="card-header bg-warning text-white">
-              <h6 class="m-0">Komentar Terbaru</h6>
-            </div>
+            <div class="card-header bg-warning text-white"><h6 class="m-0">Komentar Terbaru</h6></div>
             <div class="card-body p-2">
               <table class="table table-sm table-striped mb-0">
-                <thead>
-                  <tr>
-                    <th>Nama</th>
-                    <th>Komentar</th>
-                    <th>Tanggal</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>Nama</th><th>Komentar</th><th>Tanggal</th></tr></thead>
                 <tbody>
-                  <?php while ($c = mysqli_fetch_assoc($qkomentar)) { ?>
-                    <tr>
-                      <td><?= htmlspecialchars($c['nama']) ?></td>
-                      <td><?= htmlspecialchars(substr($c['isikomentar'], 0, 50)) ?>...</td>
-                      <td><?= date('d/m/Y', strtotime($c['tanggal'])) ?></td>
-                    </tr>
+                  <?php while ($komentar = mysqli_fetch_assoc($komentar_terbaru)) { ?>
+                  <tr>
+                    <td><?= htmlspecialchars($komentar['namakomentar']) ?></td>
+                    <td><?= htmlspecialchars(substr($komentar['isikomentar'], 0, 50)) ?>...</td>
+                    <td><?= date('d/m/Y', strtotime($komentar['tanggalbuat'])) ?></td>
+                  </tr>
                   <?php } ?>
                 </tbody>
               </table>
@@ -176,10 +133,10 @@ const ctx = document.getElementById('grafikkategori').getContext('2d');
 new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: <?= json_encode($labels) ?>,
+    labels: <?= json_encode($label_kategori) ?>,
     datasets: [{
       label: 'Jumlah Konten',
-      data: <?= json_encode($data) ?>,
+      data: <?= json_encode($jumlah_konten) ?>,
       backgroundColor: 'rgba(54, 162, 235, 0.6)',
       borderColor: 'rgba(54, 162, 235, 1)',
       borderWidth: 1
@@ -188,9 +145,7 @@ new Chart(ctx, {
   options: {
     responsive: true,
     maintainAspectRatio: false,
-    scales: {
-      y: { beginAtZero: true }
-    }
+    scales: { y: { beginAtZero: true } }
   }
 });
 </script>
@@ -203,5 +158,3 @@ new Chart(ctx, {
   table th, table td { font-size: 0.8rem; }
 }
 </style>
-
-<?php include '../../pages/user/footer.php'; ?>

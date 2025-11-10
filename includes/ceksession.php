@@ -4,7 +4,9 @@
 // Deskripsi: Cek login admin/editor dan redirect jika belum login
 // ==============================================
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Jika belum login, kembalikan ke halaman login
 if (!isset($_SESSION['iduser']) || !isset($_SESSION['role'])) {
@@ -13,7 +15,7 @@ if (!isset($_SESSION['iduser']) || !isset($_SESSION['role'])) {
 }
 
 // Ambil data session jika dibutuhkan
-$iduser = $_SESSION['iduser'];
-$namauser = $_SESSION['namauser'];
-$role = $_SESSION['role'];
+$iduser    = $_SESSION['iduser'];
+$namauser  = $_SESSION['namauser'];
+$role      = $_SESSION['role'];
 ?>

@@ -1,74 +1,9 @@
-
-
-CMSMAHDI/
-│
-├─ pages/
-│  ├─ user/
-│  │  ├─ header.php
-│  │  ├─ navbar.php
-│  │  ├─ sidebar.php
-│  │  └─ footer.php
-│  │
-│  ├─ editor/
-│  │  ├─ header.php
-│  │  ├─ navbar.php
-│  │  ├─ sidebar.php
-│  │  └─ footer.php
-│  │
-│  └─ landing/
-│     ├─ header.php
-│     ├─ navbar.php
-│     ├─ sidebar.php
-│     └─ footer.php
-│
-├─ asset/
-│  ├─ dist/(komponen admin LTE)
-│  └─ pluggin/(komponen admin LTE)
-│
-├─ views/
-│  ├─ auth/
-│  │  ├─ dblogin.php
-│  │  ├─ login.php
-│  │  ├─ logout.php
-│  │  └─ register.php
-│  │
-│  ├─ user/(meng-extend dari pages/user)
-│  │  │
-│  │  ├─ user
-│  │  │ ├─fotouser
-│  │  │ ├─dbuser.php
-│  │  │ ├─daftaruser.php
-│  │  │ ├─tambahuser.php
-│  │  │ └─edituser.php
-│  │  │
-│  │  ├─ kategori
-│  │  │ ├─dbkategori.php
-│  │  │ ├─daftarkategori.php
-│  │  │ ├─tambahkategori.php
-│  │  │ └─editkategori.php
-│  │  │
-│  │  ├─ komentar
-│  │  │ ├─dbkomentar.php
-│  │  │ ├─daftarkomentar.php
-│  │  │ ├─tambahkomentar.php
-│  │  │ └─editkomentar.php
-│  │  │
-│  │  ├─ konten
-│  │  │ ├─fotokonten
-│  │  │ ├─dbkonten.php
-│  │  │ ├─daftarkonten.php
-│  │  │ ├─tambahkonten.php
-│  │  │ └─editkonten.php
-│  │  │ 
-│  │  ├─dashboardadmin.php
-│  │  │
-│  │  └─dashboareditor.php
-│  │
-│  └─ landing/(meng-extend dari pages/landing dana tidak punya sidebar)
-│     ├─ detilkonten.php
-│     ├─ home.php
-│     └─ dbkomentar.php
-│
-├─ index.php
-├─ koneksi.php
-└─ struktur.txt
+| Modul                         | Admin | Editor | Pengunjung |
+| ----------------------------- | ----- | ------ | ---------- |
+| **Landing (index.php)**       | ✅     | ✅      | ✅          |
+| **Dashboard (dashboard.php)** | ✅     | ✅      | ❌          |
+| **User Management**           | ✅     | ❌      | ❌          |
+| **Kategori**                  | ✅     | ✅      | ❌          |
+| **Konten**                    | ✅     | ✅      | ❌          |
+| **Komentar**                  | ✅     | ✅      | ❌          |
+| **Laporan (opsional)**        | ✅     | ❌      | ❌          |

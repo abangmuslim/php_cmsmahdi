@@ -1,39 +1,44 @@
 <?php
 // ==============================================
 // File: includes/fungsiupload.php
-// Deskripsi: Fungsi upload gambar untuk user/konten/komentar
+// Deskripsi: Fungsi upload gambar untuk user/konten/komentar CMS Mahdi
 // ==============================================
 
-function upload_gambar($file_input, $folder_tujuan) {
-    $target_dir = "uploads/" . $folder_tujuan . "/";
-    $nama_file = basename($_FILES[$file_input]["name"]);
-    $ext = strtolower(pathinfo($nama_file, PATHINFO_EXTENSION));
-
-    // Validasi tipe file
-    $tipe_diizinkan = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    if (!in_array($ext, $tipe_diizinkan)) {
-        return ["status" => false, "pesan" => "Tipe file tidak diizinkan"];
+function upload_gambar($fileArray, $folderTujuan) {
+    // Pastikan array file valid
+    if (!isset($fileArray['name']) || $fileArray['error'] !== UPLOAD_ERR_OK) {
+        return 'default.png';
     }
-
-    // Validasi ukuran (maks 2 MB)
-    if ($_FILES[$file_input]["size"] > 2000000) {
-        return ["status" => false, "pesan" => "Ukuran file terlalu besar (maks 2 MB)"];
-    }
-
-    // Rename file unik
-    $nama_baru = time() . "_" . rand(100, 999) . "." . $ext;
-    $target_file = $target_dir . $nama_baru;
 
     // Pastikan folder ada
-    if (!file_exists($target_dir)) {
-        mkdir($target_dir, 0755, true);
+    if (!file_exists($folderTujuan)) {
+        mkdir($folderTujuan, 0755, true);
     }
 
+    // Ambil nama & ekstensi file
+    $namaFile = basename($fileArray['name']);
+    $ext = strtolower(pathinfo($namaFile, PATHINFO_EXTENSION));
+
+    // Validasi ekstensi
+    $extValid = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    if (!in_array($ext, $extValid)) {
+        return 'default.png';
+    }
+
+    // Validasi ukuran (maks 2MB)
+    if ($fileArray['size'] > 2000000) {
+        return 'default.png';
+    }
+
+    // Buat nama unik
+    $namaBaru = time() . '_' . rand(100, 999) . '.' . $ext;
+    $targetFile = rtrim($folderTujuan, '/') . '/' . $namaBaru;
+
     // Pindahkan file
-    if (move_uploaded_file($_FILES[$file_input]["tmp_name"], $target_file)) {
-        return ["status" => true, "nama" => $nama_baru];
+    if (move_uploaded_file($fileArray['tmp_name'], $targetFile)) {
+        return $namaBaru;
     } else {
-        return ["status" => false, "pesan" => "Gagal mengunggah file"];
+        return 'default.png';
     }
 }
 ?>

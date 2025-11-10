@@ -1,54 +1,116 @@
 <?php
-require_once '../../../includes/ceksession.php';
-require_once '../../../includes/koneksi.php';
-include '../../../pages/user/header.php';
-include '../../../pages/user/navbar.php';
-include '../../../pages/user/sidebar.php';
+// =============================================
+// File: views/user/user/edituser.php
+// Deskripsi: Form edit data user (Admin Only)
+// =============================================
 
-$id = intval($_GET['id']);
-$data = $koneksi->query("SELECT * FROM tb_user WHERE iduser=$id")->fetch_assoc();
+require_once dirname(__DIR__, 3) . '/includes/konfig.php';
+require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
+require_once dirname(__DIR__, 3) . '/includes/ceksession.php';
+
+// Pastikan hanya admin yang bisa akses
+if ($role !== 'admin') {
+    header("Location: ../../../index.php");
+    exit;
+}
+
+// Ambil data user berdasarkan id
+$iduser = $_GET['id'] ?? 0;
+$query  = mysqli_query($koneksi, "SELECT * FROM user WHERE iduser = '$iduser'");
+$data   = mysqli_fetch_assoc($query);
+
+if (!$data) {
+    echo "<div class='alert alert-danger'>Data user tidak ditemukan!</div>";
+    exit;
+}
+
+// Tentukan path foto
+$fotoPath = "uploads/user/" . htmlspecialchars($data['foto']);
+if (!file_exists(dirname(__DIR__, 3) . "/$fotoPath") || empty($data['foto'])) {
+    $fotoPath = "uploads/user/default.png";
+}
 ?>
 
-<div class="container-fluid px-4">
-  <h3 class="mt-4 mb-3 border-bottom pb-2">Edit User</h3>
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1><i class="fas fa-user-edit"></i> Edit User</h1>
+    <ol class="breadcrumb">
+      <li><a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a href="dashboard.php?hal=user/daftaruser">Daftar User</a></li>
+      <li class="active">Edit User</li>
+    </ol>
+  </section>
 
-  <?php if ($data): ?>
-  <form action="prosesuser.php?aksi=edit" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="iduser" value="<?= $data['iduser']; ?>">
+  <section class="content">
+    <div class="card card-primary">
+      <div class="card-header">
+        <h3 class="card-title">Form Edit Data User</h3>
+      </div>
 
-    <div class="mb-3">
-      <label>Nama Lengkap</label>
-      <input type="text" name="namauser" class="form-control" value="<?= htmlspecialchars($data['namauser']); ?>" required>
-    </div>
-    <div class="mb-3">
-      <label>Username</label>
-      <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($data['username']); ?>" required>
-    </div>
-    <div class="mb-3">
-      <label>Password Baru (kosongkan jika tidak diubah)</label>
-      <input type="password" name="password" class="form-control">
-    </div>
-    <div class="mb-3">
-      <label>Role</label>
-      <select name="role" class="form-select">
-        <option value="admin" <?= $data['role'] == 'admin' ? 'selected' : ''; ?>>Admin</option>
-        <option value="editor" <?= $data['role'] == 'editor' ? 'selected' : ''; ?>>Editor</option>
-      </select>
-    </div>
-    <div class="mb-3">
-      <label>Foto Profil</label><br>
-      <?php if ($data['foto']): ?>
-        <img src="../../../uploads/user/<?= $data['foto']; ?>" width="60" class="rounded mb-2"><br>
-      <?php endif; ?>
-      <input type="file" name="foto" class="form-control">
-    </div>
+      <form method="POST" action="views/user/user/prosesuser.php" enctype="multipart/form-data">
+        <input type="hidden" name="aksi" value="update">
+        <input type="hidden" name="iduser" value="<?= htmlspecialchars($data['iduser']) ?>">
+        <input type="hidden" name="fotolama" value="<?= htmlspecialchars($data['foto']) ?>">
 
-    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-    <a href="daftaruser.php" class="btn btn-secondary">Kembali</a>
-  </form>
-  <?php else: ?>
-    <div class="alert alert-warning">Data user tidak ditemukan.</div>
-  <?php endif; ?>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group">
+                <label>Nama Lengkap</label>
+                <input type="text" name="namauser" class="form-control" value="<?= htmlspecialchars($data['namauser']) ?>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" value="<?= htmlspecialchars($data['username']) ?>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Password (Kosongkan jika tidak diubah)</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••">
+              </div>
+
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($data['email']) ?>" required>
+              </div>
+
+              <div class="form-group">
+                <label>Role</label>
+                <select name="role" class="form-control" required>
+                  <option value="admin" <?= $data['role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                  <option value="editor" <?= $data['role'] === 'editor' ? 'selected' : '' ?>>Editor</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-4 text-center">
+              <label>Foto Saat Ini</label><br>
+              <img id="previewFoto" src="<?= $fotoPath ?>" alt="Foto User" class="img-thumbnail mb-2" width="160">
+              <input type="file" name="foto" id="fotoInput" class="form-control mt-2" accept="image/*">
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Perubahan</button>
+          <a href="dashboard.php?hal=user/daftaruser" class="btn btn-secondary"><i class="fas fa-times"></i> Batal</a>
+        </div>
+      </form>
+    </div>
+  </section>
 </div>
 
-<?php include '../../../pages/user/footer.php'; ?>
+<!-- Preview foto otomatis -->
+<script>
+document.getElementById('fotoInput').addEventListener('change', function (event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById('previewFoto').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+</script>
