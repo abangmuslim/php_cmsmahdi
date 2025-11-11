@@ -1,52 +1,93 @@
 <?php
 // ===============================================
 // File: views/user/kategori/daftarkategori.php
-// Deskripsi: Menampilkan daftar kategori
+// Deskripsi: Daftar Kategori untuk Admin CMS Mahdi (FINAL VERSION)
 // ===============================================
 
-require_once '../../../includes/ceksession.php';
-require_once '../../../includes/koneksi.php';
-include '../../../pages/user/header.php';
-include '../../../pages/user/navbar.php';
-include '../../../pages/user/sidebar.php';
+// Load keamanan & koneksi
+require_once dirname(__DIR__, 3) . '/includes/ceksession.php';
+require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
 ?>
 
-<div class="container-fluid px-4">
-  <h3 class="mt-4 mb-3 border-bottom pb-2">Daftar Kategori</h3>
+<!-- =============================================== -->
+<!--  BAGIAN KONTEN (mengikuti struktur AdminLTE)    -->
+<!-- =============================================== -->
+<div class="content-wrapper p-3">
+  <section class="content">
+    <div class="container-fluid">
 
-  <a href="tambahkategori.php" class="btn btn-primary mb-3">+ Tambah Kategori</a>
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="m-0">Daftar Kategori</h5>
+          <div class="ml-auto">
+            <a href="dashboard.php?hal=kategori/tambahkategori" class="btn btn-info btn-sm text-white fw-bold" style="font-size: 1rem;">
+              <i class="fa fa-plus"></i> Tambah Kategori
+            </a>
+          </div>
+        </div>
 
-  <table class="table table-bordered table-striped">
-    <thead>
-      <tr class="text-center bg-light">
-        <th>No</th>
-        <th>Nama Kategori</th>
-        <th>Slug</th>
-        <th>Tanggal</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php
-      $no = 1;
-      $sql = "SELECT * FROM tb_kategori ORDER BY idkategori DESC";
-      $hasil = $koneksi->query($sql);
+        <div class="card-body table-responsive">
+          <table class="table table-bordered table-striped align-middle mb-0">
+            <thead class="text-center bg-light">
+              <tr>
+                <th style="width:5%">No</th>
+                <th>Nama Kategori</th>
+                <th>Deskripsi</th>
+                <th style="width:15%">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $no = 1;
+              $query = "SELECT * FROM kategori ORDER BY idkategori DESC";
+              $hasil = mysqli_query($koneksi, $query);
 
-      while ($data = $hasil->fetch_assoc()):
-      ?>
-        <tr>
-          <td class="text-center"><?= $no++; ?></td>
-          <td><?= htmlspecialchars($data['namakategori']); ?></td>
-          <td><?= htmlspecialchars($data['slug']); ?></td>
-          <td><?= $data['tanggal']; ?></td>
-          <td class="text-center">
-            <a href="editkategori.php?id=<?= $data['idkategori']; ?>" class="btn btn-sm btn-warning">Edit</a>
-            <a href="proseskategori.php?aksi=hapus&id=<?= $data['idkategori']; ?>" onclick="return confirm('Yakin ingin menghapus kategori ini?')" class="btn btn-sm btn-danger">Hapus</a>
-          </td>
-        </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
+              while ($data = mysqli_fetch_assoc($hasil)):
+              ?>
+                <tr>
+                  <td class="text-center"><?= $no++; ?></td>
+                  <td><?= htmlspecialchars($data['namakategori']); ?></td>
+                  <td><?= htmlspecialchars($data['deskripsi']); ?></td>
+                  <td class="text-center">
+                    <!-- Tombol Edit -->
+                    <a href="dashboard.php?hal=kategori/editkategori&id=<?= $data['idkategori']; ?>"
+                      class="btn btn-warning btn-sm me-1"
+                      title="Edit">
+                      <i class="fa fa-edit"></i>
+                    </a>
+
+                    <!-- Tombol Hapus -->
+                    <a href="views/user/kategori/proseskategori.php?aksi=hapus&id=<?= $data['idkategori']; ?>"
+                      onclick="return confirm('Yakin ingin menghapus kategori ini?')"
+                      class="btn btn-danger btn-sm"
+                      title="Hapus">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              <?php endwhile; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
 </div>
 
-<?php include '../../../pages/user/footer.php'; ?>
+<!-- =============================================== -->
+<!--  STYLE TAMBAHAN KHUSUS UNTUK HALAMAN INI        -->
+<!-- =============================================== -->
+<style>
+  .content-wrapper {
+    background-color: #f4f6f9;
+    min-height: 100vh;
+  }
+
+  @media (max-width: 576px) {
+    table th,
+    table td {
+      font-size: 0.8rem;
+    }
+  }
+</style>

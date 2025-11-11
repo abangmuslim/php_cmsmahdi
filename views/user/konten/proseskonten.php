@@ -1,56 +1,146 @@
 <?php
-include_once "../../includes/koneksi.php";
-include_once "../../includes/fungsiupload.php";
-include_once "../../includes/ceksession.php";
+// ===============================================================
+// File: views/user/konten/proseskonten.php
+// Deskripsi: Logic backend CRUD untuk manajemen konten CMS Mahdi
+// ===============================================================
 
-if (isset($_POST['simpan'])) {
-  $judul = trim($_POST['judul']);
-  $idkategori = $_POST['idkategori'];
-  $isikonten = trim($_POST['isikonten']);
-  $status = $_POST['status'];
-  $iduser = $_SESSION['iduser'];
-  $tanggal = date("Y-m-d H:i:s");
+require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
+require_once dirname(__DIR__, 3) . '/includes/fungsivalidasi.php';
+require_once dirname(__DIR__, 3) . '/includes/fungsiupload.php';
+require_once dirname(__DIR__, 3) . '/includes/ceksession.php';
 
-  if ($judul == "" || strlen($isikonten) < 10) {
-    echo "<script>alert('Judul atau isi tidak valid!');history.back();</script>";
+// Ambil aksi (prioritaskan POST)
+$aksi = $_POST['aksi'] ?? ($_GET['aksi'] ?? '');
+
+// Lokasi folder upload gambar konten
+$folderUpload = dirname(__DIR__, 3) . '/uploads/konten/';
+
+// Ambil id user dari session
+$iduser = $_SESSION['iduser'] ?? 0;
+
+// =====================================================
+// TAMBAH KONTEN
+// =====================================================
+if ($aksi === 'tambah') {
+    $judul      = bersihkan($_POST['judul'] ?? '');
+    $isi        = $_POST['isi'] ?? '';
+    $idkategori = intval($_POST['idkategori'] ?? 0);
+    $tag        = bersihkan($_POST['tag'] ?? '');
+    $status     = bersihkan($_POST['status'] ?? 'draft');
+    $tanggal    = date('Y-m-d H:i:s');
+
+    // Validasi wajib isi
+    if (empty($judul) || empty($isi) || $idkategori <= 0) {
+        header("Location: ../../../dashboard.php?hal=konten/tambahkonten&status=error_kosong");
+        exit;
+    }
+
+    // Upload gambar (opsional)
+    $gambar = upload_gambar($_FILES['gambar'] ?? null, $folderUpload);
+
+    // Insert ke database
+    $stmt = $koneksi->prepare("INSERT INTO konten (idkategori, iduser, judulkonten, isikonten, gambar, tag, status, tanggalbuat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iissssss", $idkategori, $iduser, $judul, $isi, $gambar, $tag, $status, $tanggal);
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: ../../../dashboard.php?hal=konten/daftarkonten&status=sukses_tambah");
     exit;
-  }
-
-  $gambar = fungsiupload($_FILES['gambar'], "../../uploads/konten/");
-
-  mysqli_query($koneksi, "INSERT INTO tb_konten (judul, idkategori, isikonten, gambar, status, iduser, tanggal)
-    VALUES ('$judul','$idkategori','$isikonten','$gambar','$status','$iduser','$tanggal')");
-
-  header("Location: daftarkonten.php");
-  exit;
 }
 
-if (isset($_POST['update'])) {
-  $id = $_POST['idkonten'];
-  $judul = trim($_POST['judul']);
-  $idkategori = $_POST['idkategori'];
-  $isikonten = trim($_POST['isikonten']);
-  $status = $_POST['status'];
+// =====================================================
+// UPDATE KONTEN
+// =====================================================
+elseif ($aksi === 'update') {
+    $idkonten   = intval($_POST['idkonten'] ?? 0);
+    $judul      = bersihkan($_POST['judul'] ?? '');
+    $isi        = $_POST['isi'] ?? '';
+    $idkategori = intval($_POST['idkategori'] ?? 0);
+    $tag        = bersihkan($_POST['tag'] ?? '');
+    $status     = bersihkan($_POST['status'] ?? 'draft');
 
-  $gambar = fungsiupload($_FILES['gambar'], "../../uploads/konten/");
-  if ($gambar) {
-    mysqli_query($koneksi, "UPDATE tb_konten SET judul='$judul', idkategori='$idkategori', isikonten='$isikonten', gambar='$gambar', status='$status' WHERE idkonten='$id'");
-  } else {
-    mysqli_query($koneksi, "UPDATE tb_konten SET judul='$judul', idkategori='$idkategori', isikonten='$isikonten', status='$status' WHERE idkonten='$id'");
-  }
+    // Validasi wajib isi
+    if (empty($judul) || empty($isi) || $idkategori <= 0) {
+        header("Location: ../../../dashboard.php?hal=konten/editkonten&id=$idkonten&status=error_kosong");
+        exit;
+    }
 
-  header("Location: daftarkonten.php");
-  exit;
+    // Ambil data lama
+    $stmtOld = $koneksi->prepare("SELECT gambar FROM konten WHERE idkonten=?");
+    $stmtOld->bind_param("i", $idkonten);
+    $stmtOld->execute();
+    $old = $stmtOld->get_result()->fetch_assoc();
+    $stmtOld->close();
+
+    if (!$old) {
+        header("Location: ../../../dashboard.php?hal=konten/daftarkonten&status=error_notfound");
+        exit;
+    }
+
+    // Query update
+    $query  = "UPDATE konten SET idkategori=?, judulkonten=?, isikonten=?, tag=?, status=?";
+    $params = [$idkategori, $judul, $isi, $tag, $status];
+    $types  = "issss";
+
+    // Upload gambar baru jika ada
+    if (!empty($_FILES['gambar']['name'])) {
+        $gambarBaru = upload_gambar($_FILES['gambar'], $folderUpload);
+
+        if (!empty($old['gambar']) && file_exists($folderUpload . $old['gambar'])) {
+            unlink($folderUpload . $old['gambar']);
+        }
+
+        $query .= ", gambar=?";
+        $params[] = $gambarBaru;
+        $types .= "s";
+    }
+
+    $query .= " WHERE idkonten=?";
+    $params[] = $idkonten;
+    $types .= "i";
+
+    $stmt = $koneksi->prepare($query);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: ../../../dashboard.php?hal=konten/daftarkonten&status=sukses_edit");
+    exit;
 }
 
-if (isset($_GET['aksi']) && $_GET['aksi'] == "hapus") {
-  $id = $_GET['id'];
-  $q = mysqli_fetch_array(mysqli_query($koneksi, "SELECT gambar FROM tb_konten WHERE idkonten='$id'"));
-  if ($q['gambar'] && file_exists("../../uploads/konten/" . $q['gambar'])) {
-    unlink("../../uploads/konten/" . $q['gambar']);
-  }
-  mysqli_query($koneksi, "DELETE FROM tb_konten WHERE idkonten='$id'");
-  header("Location: daftarkonten.php");
-  exit;
+// =====================================================
+// HAPUS KONTEN
+// =====================================================
+elseif ($aksi === 'hapus') {
+    $idkonten = intval($_GET['id'] ?? 0);
+
+    // Ambil data lama
+    $stmtOld = $koneksi->prepare("SELECT gambar FROM konten WHERE idkonten=?");
+    $stmtOld->bind_param("i", $idkonten);
+    $stmtOld->execute();
+    $old = $stmtOld->get_result()->fetch_assoc();
+    $stmtOld->close();
+
+    // Hapus file gambar jika ada
+    if ($old && !empty($old['gambar']) && file_exists($folderUpload . $old['gambar'])) {
+        unlink($folderUpload . $old['gambar']);
+    }
+
+    // Hapus record
+    $stmt = $koneksi->prepare("DELETE FROM konten WHERE idkonten=?");
+    $stmt->bind_param("i", $idkonten);
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: ../../../dashboard.php?hal=konten/daftarkonten&status=sukses_hapus");
+    exit;
+}
+
+// =====================================================
+// DEFAULT: AKSI TIDAK VALID
+// =====================================================
+else {
+    header("Location: ../../../dashboard.php?hal=konten/daftarkonten&status=invalid_aksi");
+    exit;
 }
 ?>

@@ -1,32 +1,27 @@
 <?php
-// ===============================================
-// File: views/landing/proseskomentar.php
-// Deskripsi: Proses simpan komentar pembaca pada CMSMAHDI
-// ===============================================
-
-// Muat konfigurasi path dan koneksi
 require_once $_SERVER['DOCUMENT_ROOT'] . '/cmsmahdi/includes/path.php';
 require_once INCLUDES_PATH . 'koneksi.php';
 require_once INCLUDES_PATH . 'fungsivalidasi.php';
 
-// Ambil data dari form dengan validasi dasar
-$idkonten = isset($_POST['idkonten']) ? intval($_POST['idkonten']) : 0;
-$nama = bersihkan_input($_POST['namakomentator'] ?? '');
-$komentar = bersihkan_input($_POST['isikomentar'] ?? '');
+// Ambil data dari form
+$idkonten = intval($_POST['idkonten'] ?? 0);
+$nama     = bersihkan($_POST['namakomentar'] ?? '');
+$email    = bersihkan($_POST['email'] ?? '');
+$komentar = bersihkan($_POST['isikomentar'] ?? '');
 
-// Pastikan semua input terisi sebelum simpan
+// Pastikan data lengkap
 if ($idkonten > 0 && !empty($nama) && !empty($komentar)) {
     $stmt = $koneksi->prepare("
-        INSERT INTO komentar (idkonten, namakomentator, isikomentar, tanggal) 
-        VALUES (?, ?, ?, NOW())
+        INSERT INTO komentar (idkonten, namakomentar, email, isikomentar, tanggalbuat, status)
+        VALUES (?, ?, ?, ?, NOW(), 'tampil')
     ");
     if ($stmt) {
-        $stmt->bind_param("iss", $idkonten, $nama, $komentar);
+        $stmt->bind_param("isss", $idkonten, $nama, $email, $komentar);
         $stmt->execute();
         $stmt->close();
     }
 }
 
-// Redirect kembali ke halaman detil konten
-header("Location: detilkonten.php?id=" . $idkonten);
+// Redirect kembali ke halaman konten publik
+header("Location: " . BASE_URL . "artikel/" . $idkonten);
 exit;

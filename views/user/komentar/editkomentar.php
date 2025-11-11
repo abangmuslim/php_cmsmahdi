@@ -1,52 +1,76 @@
 <?php
-include_once "../../includes/koneksi.php";
-include_once "../../includes/ceksession.php";
-include_once "../../pages/user/header.php";
-include_once "../../pages/user/navbar.php";
-include_once "../../pages/user/sidebar.php";
+require_once __DIR__ . '/../../../includes/path.php';
+require_once INCLUDES_PATH . 'koneksi.php';
+require_once INCLUDES_PATH . 'ceksession.php';
 
-$id = $_GET['id'];
-$data = mysqli_fetch_array(mysqli_query($koneksi, "SELECT * FROM tb_komentar WHERE idkomentar='$id'"));
+$idkomentar = intval($_GET['id'] ?? 0);
+$res = mysqli_query($koneksi, "SELECT * FROM komentar WHERE idkomentar=$idkomentar");
+$data = mysqli_fetch_assoc($res);
+
+if (!$data) {
+    echo "<script>alert('Data tidak ditemukan'); window.location='dashboard.php?hal=komentar/daftarkomentar';</script>";
+    exit;
+}
 ?>
 
-<div class="container">
-  <h2>Edit Komentar</h2>
-  <form action="proseskomentar.php" method="POST" onsubmit="return validasiForm()">
-    <input type="hidden" name="idkomentar" value="<?= $data['idkomentar'] ?>">
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1><i class="fas fa-edit"></i> Edit Komentar</h1>
+  </section>
 
-    <label>Konten:</label><br>
-    <select name="idkonten" required>
-      <?php
-      $konten = mysqli_query($koneksi, "SELECT idkonten, judul FROM tb_konten ORDER BY judul ASC");
-      while ($k = mysqli_fetch_array($konten)) {
-        $sel = ($k['idkonten'] == $data['idkonten']) ? "selected" : "";
-        echo "<option value='{$k['idkonten']}' $sel>{$k['judul']}</option>";
-      }
-      ?>
-    </select><br><br>
+  <section class="content">
+    <div class="card card-warning">
+      <div class="card-header bg-gradient-warning">
+        <h3 class="card-title"><i class="fas fa-edit"></i> Form Edit Komentar</h3>
+      </div>
 
-    <label>Isi Komentar:</label><br>
-    <textarea name="isikomentar" rows="4" required><?= htmlspecialchars($data['isikomentar']) ?></textarea><br><br>
+      <form action="views/user/komentar/proseskomentar.php" method="POST">
+        <input type="hidden" name="idkomentar" value="<?= $idkomentar; ?>">
 
-    <label>Status:</label><br>
-    <select name="status">
-      <option value="tampil" <?= $data['status']=='tampil'?'selected':'' ?>>Tampil</option>
-      <option value="sembunyi" <?= $data['status']=='sembunyi'?'selected':'' ?>>Sembunyi</option>
-    </select><br><br>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Konten</label>
+            <select name="idkonten" class="form-control" required>
+              <?php
+              $resKonten = mysqli_query($koneksi, "SELECT * FROM konten ORDER BY judulkonten ASC");
+              while ($row = mysqli_fetch_assoc($resKonten)) {
+                  $sel = ($row['idkonten'] == $data['idkonten']) ? 'selected' : '';
+                  echo "<option value='{$row['idkonten']}' $sel>" . htmlspecialchars($row['judulkonten']) . "</option>";
+              }
+              ?>
+            </select>
+          </div>
 
-    <button type="submit" name="update">Update</button>
-  </form>
+          <div class="form-group">
+            <label>Nama Komentar</label>
+            <input type="text" name="namakomentar" class="form-control" value="<?= htmlspecialchars($data['namakomentar']); ?>" required>
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($data['email']); ?>">
+          </div>
+
+          <div class="form-group">
+            <label>Isi Komentar</label>
+            <textarea name="isikomentar" class="form-control" rows="5" required><?= htmlspecialchars($data['isikomentar']); ?></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control">
+              <option value="tampil" <?= $data['status']=='tampil'?'selected':''; ?>>Tampil</option>
+              <option value="sembunyi" <?= $data['status']=='sembunyi'?'selected':''; ?>>Sembunyi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card-footer text-right">
+          <a href="dashboard.php?hal=komentar/daftarkomentar" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Kembali</a>
+          <button type="reset" class="btn btn-warning btn-sm"><i class="fas fa-retweet"></i> Reset</button>
+          <button type="submit" name="aksi" value="update" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </section>
 </div>
-
-<script>
-function validasiForm() {
-  const isi = document.querySelector('[name="isikomentar"]').value.trim();
-  if (isi.length < 5) {
-    alert("Isi komentar minimal 5 karakter!");
-    return false;
-  }
-  return true;
-}
-</script>
-
-<?php include_once "../../pages/user/footer.php"; ?>

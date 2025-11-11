@@ -1,44 +1,84 @@
 <?php
-// ===============================================
+// ===============================================================
 // File: views/user/kategori/proseskategori.php
-// Deskripsi: Logic backend untuk CRUD kategori
-// ===============================================
+// Deskripsi: Logic backend CRUD untuk manajemen kategori CMS Mahdi (FINAL VERSION)
+// ===============================================================
 
-require_once '../../../includes/koneksi.php';
-require_once '../../../includes/fungsivalidasi.php';
-require_once '../../../includes/ceksession.php';
+require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
+require_once dirname(__DIR__, 3) . '/includes/fungsivalidasi.php';
+require_once dirname(__DIR__, 3) . '/includes/ceksession.php';
 
-$aksi = $_GET['aksi'] ?? '';
+// Ambil aksi (prioritaskan POST)
+$aksi = $_POST['aksi'] ?? ($_GET['aksi'] ?? '');
 
-if ($aksi == 'tambah') {
-    $namakategori = bersihkan_input($_POST['namakategori'] ?? '');
-    $slug = strtolower(str_replace(' ', '-', $namakategori));
+// =====================================================
+// TAMBAH KATEGORI
+// =====================================================
+if ($aksi === 'tambah') {
+    $nama      = bersihkan($_POST['namakategori'] ?? '');
+    $deskripsi = bersihkan($_POST['deskripsi'] ?? '');
 
-    $stmt = $koneksi->prepare("INSERT INTO tb_kategori (namakategori, slug, tanggal) VALUES (?, ?, NOW())");
-    $stmt->bind_param("ss", $namakategori, $slug);
+    // Validasi wajib isi
+    if (empty($nama)) {
+        header("Location: ../../../dashboard.php?hal=kategori/tambahkategori&status=error_kosong");
+        exit;
+    }
+
+    // Simpan ke database
+    $stmt = $koneksi->prepare("INSERT INTO kategori (namakategori, deskripsi) VALUES (?, ?)");
+    $stmt->bind_param("ss", $nama, $deskripsi);
     $stmt->execute();
+    $stmt->close();
 
-    header("Location: daftarkategori.php?status=sukses_tambah");
-    exit;
-
-} elseif ($aksi == 'edit') {
-    $id = intval($_POST['idkategori']);
-    $namakategori = bersihkan_input($_POST['namakategori'] ?? '');
-    $slug = strtolower(str_replace(' ', '-', $namakategori));
-
-    $stmt = $koneksi->prepare("UPDATE tb_kategori SET namakategori=?, slug=? WHERE idkategori=?");
-    $stmt->bind_param("ssi", $namakategori, $slug, $id);
-    $stmt->execute();
-
-    header("Location: daftarkategori.php?status=sukses_edit");
-    exit;
-
-} elseif ($aksi == 'hapus') {
-    $id = intval($_GET['id']);
-    $stmt = $koneksi->prepare("DELETE FROM tb_kategori WHERE idkategori=?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-
-    header("Location: daftarkategori.php?status=sukses_hapus");
+    header("Location: ../../../dashboard.php?hal=kategori/daftarkategori&status=sukses_tambah");
     exit;
 }
+
+// =====================================================
+// UPDATE KATEGORI
+// =====================================================
+elseif ($aksi === 'update') {
+    $id        = intval($_POST['idkategori'] ?? 0);
+    $nama      = bersihkan($_POST['namakategori'] ?? '');
+    $deskripsi = bersihkan($_POST['deskripsi'] ?? '');
+
+    // Validasi wajib isi
+    if (empty($nama)) {
+        header("Location: ../../../dashboard.php?hal=kategori/editkategori&id=$id&status=error_kosong");
+        exit;
+    }
+
+    // Update database
+    $stmt = $koneksi->prepare("UPDATE kategori SET namakategori=?, deskripsi=? WHERE idkategori=?");
+    $stmt->bind_param("ssi", $nama, $deskripsi, $id);
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: ../../../dashboard.php?hal=kategori/daftarkategori&status=sukses_edit");
+    exit;
+}
+
+// =====================================================
+// HAPUS KATEGORI
+// =====================================================
+elseif ($aksi === 'hapus') {
+    $id = intval($_GET['id'] ?? 0);
+
+    // Hapus dari database
+    $stmt = $koneksi->prepare("DELETE FROM kategori WHERE idkategori=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: ../../../dashboard.php?hal=kategori/daftarkategori&status=sukses_hapus");
+    exit;
+}
+
+// =====================================================
+// DEFAULT: AKSI TIDAK VALID
+// =====================================================
+else {
+    header("Location: ../../../dashboard.php?hal=kategori/daftarkategori&status=invalid_aksi");
+    exit;
+}
+?>

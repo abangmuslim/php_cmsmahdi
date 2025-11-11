@@ -1,108 +1,102 @@
 <?php
-include_once "../../includes/koneksi.php";
-include_once "../../includes/ceksession.php";
-include_once "../../pages/user/header.php";
-include_once "../../pages/user/navbar.php";
-include_once "../../pages/user/sidebar.php";
+// ===============================================
+// File: views/user/konten/daftarkonten.php
+// Deskripsi: Daftar Konten untuk Admin CMS Mahdi (final aman)
+// ===============================================
+
+// Load keamanan & koneksi
+require_once dirname(__DIR__, 3) . '/includes/ceksession.php';
+require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
 ?>
 
-<div class="container">
-  <h2>Daftar Konten</h2>
-  <a href="tambahkonten.php" class="btn btn-primary">+ Tambah Konten</a>
-  <br><br>
+<div class="content-wrapper p-3">
+  <section class="content">
+    <div class="container-fluid">
 
-  <!-- Filter Kategori dan Pencarian -->
-  <form method="GET" action="">
-    <label>Kategori:</label>
-    <select name="idkategori" onchange="this.form.submit()">
-      <option value="">-- Semua Kategori --</option>
-      <?php
-      $kat = mysqli_query($koneksi, "SELECT * FROM tb_kategori ORDER BY namakategori ASC");
-      while ($k = mysqli_fetch_array($kat)) {
-        $selected = (isset($_GET['idkategori']) && $_GET['idkategori'] == $k['idkategori']) ? "selected" : "";
-        echo "<option value='{$k['idkategori']}' $selected>{$k['namakategori']}</option>";
-      }
-      ?>
-    </select>
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="m-0">Daftar Konten</h5>
+          <div class="ml-auto">
+            <a href="dashboard.php?hal=konten/tambahkonten" class="btn btn-info btn-sm text-white fw-bold" style="font-size: 1rem;">
+              <i class="fa fa-plus"></i> Tambah Konten
+            </a>
+          </div>
+        </div>
 
-    <input type="text" name="cari" placeholder="Cari judul atau penulis" value="<?php echo $_GET['cari'] ?? ''; ?>">
-    <button type="submit">Cari</button>
-  </form>
-  <br>
+        <div class="card-body table-responsive">
+          <table class="table table-bordered table-striped align-middle mb-0">
+            <thead class="text-center bg-light">
+              <tr>
+                <th style="width:5%">No</th>
+                <th>Judul</th>
+                <th>Isi Konten</th>
+                <th>Kategori</th>
+                <th>Tag</th>
+                <th>Status</th>
+                <th>Tanggal</th>
+                <th>Gambar</th>
+                <th style="width:15%">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              $no = 1;
+              $query = "SELECT k.*, c.namakategori, u.namauser
+                        FROM konten k
+                        LEFT JOIN kategori c ON k.idkategori = c.idkategori
+                        LEFT JOIN user u ON k.iduser = u.iduser
+                        ORDER BY k.idkonten DESC";
+              $hasil = mysqli_query($koneksi, $query);
 
-  <?php
-  // Pagination
-  $limit = 10;
-  $halaman = isset($_GET['halaman']) ? (int)$_GET['halaman'] : 1;
-  $mulai = ($halaman - 1) * $limit;
+              while ($data = mysqli_fetch_assoc($hasil)):
+                  // Siapkan data aman
+                  $judul      = htmlspecialchars($data['judulkonten'] ?? '');
+                  $isi        = htmlspecialchars($data['isikonten'] ?? '');
+                  $kategori   = htmlspecialchars($data['namakategori'] ?? '-');
+                  $tag        = htmlspecialchars($data['tag'] ?? '-');
+                  $status     = htmlspecialchars($data['status'] ?? '-');
+                  $tanggal    = !empty($data['tanggalbuat']) ? date('d-m-Y H:i', strtotime($data['tanggalbuat'])) : '-';
+                  $namauser   = htmlspecialchars($data['namauser'] ?? '-');
+                  $gambar     = !empty($data['gambar']) ? $data['gambar'] : 'default.png';
+              ?>
+                <tr>
+                  <td class="text-center"><?= $no++; ?></td>
+                  <td><?= $judul; ?></td>
+                  <td><?= $isi; ?></td>
+                  <td><?= $kategori; ?></td>
+                  <td><?= $tag; ?></td>
+                  <td class="text-center">
+                    <span class="badge bg-<?= $status === 'publik' ? 'success' : 'secondary'; ?>">
+                      <?= ucfirst($status); ?>
+                    </span>
+                  </td>
+                  <td class="text-center"><?= $tanggal; ?></td>
+                  <td class="text-center">
+                    <img src="<?= url('uploads/konten/' . $gambar); ?>" width="50" class="img-thumbnail">
+                  </td>
+                  <td class="text-center">
+                    <a href="dashboard.php?hal=konten/editkonten&id=<?= $data['idkonten']; ?>" class="btn btn-warning btn-sm me-1" title="Edit">
+                      <i class="fa fa-edit"></i>
+                    </a>
+                    <a href="views/user/konten/proseskonten.php?aksi=hapus&id=<?= $data['idkonten']; ?>" 
+                       onclick="return confirm('Yakin ingin menghapus konten ini?')" 
+                       class="btn btn-danger btn-sm" title="Hapus">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              <?php endwhile; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-  // Filter dan pencarian
-  $where = "WHERE 1=1";
-  if (!empty($_GET['idkategori'])) {
-    $idkategori = mysqli_real_escape_string($koneksi, $_GET['idkategori']);
-    $where .= " AND konten.idkategori='$idkategori'";
-  }
-  if (!empty($_GET['cari'])) {
-    $cari = mysqli_real_escape_string($koneksi, $_GET['cari']);
-    $where .= " AND (konten.judul LIKE '%$cari%' OR user.namapengguna LIKE '%$cari%')";
-  }
-
-  // Total data dan query utama
-  $totaldata = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM tb_konten konten LEFT JOIN tb_user user ON konten.iduser=user.iduser $where"));
-  $totalhalaman = ceil($totaldata / $limit);
-
-  $query = mysqli_query($koneksi, "
-    SELECT konten.*, kategori.namakategori, user.namapengguna 
-    FROM tb_konten konten
-    LEFT JOIN tb_kategori kategori ON konten.idkategori = kategori.idkategori
-    LEFT JOIN tb_user user ON konten.iduser = user.iduser
-    $where
-    ORDER BY konten.tanggal DESC
-    LIMIT $mulai, $limit
-  ");
-  ?>
-
-  <table border="1" cellpadding="8" cellspacing="0" width="100%">
-    <tr>
-      <th>No</th>
-      <th>Judul</th>
-      <th>Kategori</th>
-      <th>Penulis</th>
-      <th>Tanggal</th>
-      <th>Status</th>
-      <th>Aksi</th>
-    </tr>
-    <?php
-    $no = $mulai + 1;
-    while ($data = mysqli_fetch_array($query)) {
-      echo "
-      <tr>
-        <td>$no</td>
-        <td>{$data['judul']}</td>
-        <td>{$data['namakategori']}</td>
-        <td>{$data['namapengguna']}</td>
-        <td>{$data['tanggal']}</td>
-        <td>{$data['status']}</td>
-        <td>
-          <a href='editkonten.php?id={$data['idkonten']}'>Edit</a> | 
-          <a href='proseskonten.php?aksi=hapus&id={$data['idkonten']}' onclick='return confirm(\"Yakin ingin hapus konten ini?\")'>Hapus</a>
-        </td>
-      </tr>";
-      $no++;
-    }
-    ?>
-  </table>
-
-  <!-- Pagination -->
-  <div style="margin-top:20px; text-align:center;">
-    <?php for ($i = 1; $i <= $totalhalaman; $i++): ?>
-      <?php if ($i == $halaman): ?>
-        <strong>[<?= $i ?>]</strong>
-      <?php else: ?>
-        <a href="?halaman=<?= $i ?>&idkategori=<?= $_GET['idkategori'] ?? '' ?>&cari=<?= $_GET['cari'] ?? '' ?>"><?= $i ?></a>
-      <?php endif; ?>
-    <?php endfor; ?>
-  </div>
+    </div>
+  </section>
 </div>
 
-<?php include_once "../../pages/user/footer.php"; ?>
+<style>
+  .content-wrapper { background-color: #f4f6f9; min-height: 100vh; }
+  table img { border: 2px solid #ddd; }
+  @media (max-width: 576px) { table th, table td { font-size: 0.8rem; } }
+</style>
