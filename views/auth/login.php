@@ -1,12 +1,13 @@
 <?php
 // ====================================================
 // File: views/auth/login.php
-// Deskripsi: Halaman login untuk CMSMAHDI (zona publik)
+// Deskripsi: Halaman login untuk CMSMAHDI (zona publik, password_hash)
 // ====================================================
 
 require_once __DIR__ . '/../../includes/path.php';
 require_once INCLUDES_PATH . 'konfig.php';
 require_once INCLUDES_PATH . 'koneksi.php';
+require_once INCLUDES_PATH . 'fungsivalidasi.php';
 
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
@@ -24,14 +25,15 @@ if (isset($_SESSION['role'])) {
 }
 
 // Proses login
+$error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $username = trim($_POST['username']);
-  $password = trim($_POST['password']);
+  $username = bersihkan($_POST['username'] ?? '');
+  $password = $_POST['password'] ?? '';
 
   if ($username === '' || $password === '') {
     $error = "Username dan password wajib diisi.";
   } else {
-    $stmt = $koneksi->prepare("SELECT * FROM user WHERE username = ?");
+    $stmt = $koneksi->prepare("SELECT * FROM user WHERE username = ? LIMIT 1");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -39,7 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows > 0) {
       $user = $result->fetch_assoc();
 
-      if (md5($password) === $user['password']) {
+      // Gunakan password_verify untuk hash modern
+      if (password_verify($password, $user['password'])) {
         $_SESSION['iduser']    = $user['iduser'];
         $_SESSION['namauser']  = $user['namauser'];
         $_SESSION['role']      = $user['role'];
@@ -60,10 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
-
-<!-- ==================================================== -->
-<!-- TAMPILAN LOGIN DENGAN FOOTER SELALU TERLIHAT -->
-<!-- ==================================================== -->
 
 <style>
   .login-wrapper {
@@ -93,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="<?= BASE_URL ?>index.php?hal=login">
+            <form method="POST" action="">
               <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" name="username" id="username" class="form-control" required>
@@ -102,9 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="mb-3 position-relative">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" name="password" id="password" class="form-control" required>
-                <span class="toggle-password" onclick="togglePassword()">
-                  👁️
-                </span>
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
               </div>
 
               <div class="d-grid">

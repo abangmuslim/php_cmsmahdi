@@ -71,34 +71,47 @@ elseif ($aksi === 'update') {
         $role = 'editor';
     }
 
-    // Ambil data lama (untuk hapus foto jika diganti)
-    $stmtOld = $koneksi->prepare("SELECT foto FROM user WHERE iduser = ?");
+    // Ambil data lama
+    $stmtOld = $koneksi->prepare("SELECT password, foto FROM user WHERE iduser = ?");
     $stmtOld->bind_param("i", $id);
     $stmtOld->execute();
     $old = $stmtOld->get_result()->fetch_assoc();
     $stmtOld->close();
 
-    // Siapkan query update dinamis
+    if (!$old) {
+        header("Location: ../../../dashboard.php?hal=user/daftaruser&status=error_notfound");
+        exit;
+    }
+
+    // Siapkan data update
     $query = "UPDATE user SET namauser=?, username=?, email=?, role=?";
     $params = [$nama, $username, $email, $role];
     $types  = "ssss";
 
-    // Jika password diisi, update juga
+    // Jika password diisi baru → hash ulang
     if (!empty($password)) {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $query .= ", password=?";
         $params[] = $passwordHash;
         $types .= "s";
+    } else {
+        // Kalau kosong → pertahankan password lama
+        $passwordHash = $old['password'];
+        $query .= ", password=?";
+        $params[] = $passwordHash;
+        $types .= "s";
     }
 
-    // Jika ada foto baru, upload dan ganti
+    // Jika ada foto baru, upload & ganti
     if (!empty($_FILES['foto']['name'])) {
         $fotoBaru = upload_gambar($_FILES['foto'], $folderUpload);
 
         // Hapus foto lama jika bukan default
         if (!empty($old['foto']) && $old['foto'] !== 'default.png') {
             $pathLama = $folderUpload . $old['foto'];
-            if (file_exists($pathLama)) unlink($pathLama);
+            if (file_exists($pathLama)) {
+                unlink($pathLama);
+            }
         }
 
         $query .= ", foto=?";

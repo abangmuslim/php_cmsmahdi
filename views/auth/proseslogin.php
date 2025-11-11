@@ -20,8 +20,7 @@ if (empty($username) || empty($password)) {
 }
 
 // Query user berdasarkan username
-$sql = "SELECT * FROM user WHERE username = ?";
-$stmt = $koneksi->prepare($sql);
+$stmt = $koneksi->prepare("SELECT * FROM user WHERE username = ? LIMIT 1");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -34,19 +33,13 @@ if ($result->num_rows === 1) {
     if (password_verify($password, $user['password'])) {
 
         // Set session login
-        $_SESSION['iduser']    = $user['iduser'];
-        $_SESSION['namauser']  = $user['namauser'];
-        $_SESSION['role']      = $user['role'];
-        $_SESSION['username']  = $user['username'];
+        $_SESSION['iduser']   = $user['iduser'];
+        $_SESSION['namauser'] = $user['namauser'];
+        $_SESSION['role']     = $user['role'];
+        $_SESSION['username'] = $user['username'];
 
         // Redirect berdasarkan role
-        if ($user['role'] === 'admin') {
-            header("Location: " . url('dashboard.php'));
-        } elseif ($user['role'] === 'editor') {
-            header("Location: " . url('dashboard.php'));
-        } else {
-            header("Location: login.php?pesan=Role+tidak+valid");
-        }
+        header("Location: " . url('dashboard.php'));
         exit;
 
     } else {

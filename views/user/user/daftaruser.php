@@ -19,10 +19,13 @@ require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
           <h5 class="m-0">Daftar User</h5>
-          <a href="dashboard.php?hal=user/tambahuser" class="btn btn-light btn-sm">
-            <i class="fa fa-plus"></i> Tambah User
-          </a>
+          <div class="ml-auto">
+            <a href="dashboard.php?hal=user/tambahuser" class="btn btn-info btn-sm text-white fw-bold" style="font-size: 1rem;">
+              <i class="fa fa-plus"></i> Tambah User
+            </a>
+          </div>
         </div>
+
 
         <div class="card-body table-responsive">
           <table class="table table-bordered table-striped align-middle mb-0">
