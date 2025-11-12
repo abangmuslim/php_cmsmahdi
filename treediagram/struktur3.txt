@@ -68,6 +68,10 @@ CMSMAHDI/
 │  │  │  ├─ tambahkonten.php
 │  │  │  └─ editkonten.php
 │  │  │
+│  │  ├─ laporan/
+│  │  │  ├─ daftarlaporan.php
+│  │  │  └─ cetaklaporan.php
+│  │  │
 │  │  ├─ dashboardadmin.php     ← dashboard utama untuk admin
 │  │  └─ dashboardeditor.php    ← dashboard utama untuk editor
 │  │

@@ -16,7 +16,7 @@ define('UPLOADS_PATH', BASE_PATH . 'uploads' . DIRECTORY_SEPARATOR);
 
 // URL dasar (BASE_URL) hanya didefinisikan jika belum ada
 if (!defined('BASE_URL')) {
-    define('BASE_URL', 'http://localhost/cmsmahdi/');
+    define('BASE_URL', 'http://localhost/cmsmahdi/'); // pastikan ada slash di akhir
 }
 
 // Folder upload spesifik

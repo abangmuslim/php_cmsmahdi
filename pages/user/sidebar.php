@@ -5,7 +5,7 @@
 // ==============================================
 
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 
 require_once __DIR__ . '/../../includes/path.php';
@@ -18,16 +18,16 @@ $role_user = $_SESSION['role'] ?? 'Guest';
 $iduser    = $_SESSION['iduser'] ?? 0;
 
 if ($iduser) {
-    $stmt = $koneksi->prepare("SELECT foto FROM user WHERE iduser = ?");
-    $stmt->bind_param("i", $iduser);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($row = $result->fetch_assoc()) {
-        if (!empty($row['foto']) && file_exists(__DIR__ . '/../../uploads/user/' . $row['foto'])) {
-            $foto_user = $row['foto'];
-        }
+  $stmt = $koneksi->prepare("SELECT foto FROM user WHERE iduser = ?");
+  $stmt->bind_param("i", $iduser);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if ($row = $result->fetch_assoc()) {
+    if (!empty($row['foto']) && file_exists(__DIR__ . '/../../uploads/user/' . $row['foto'])) {
+      $foto_user = $row['foto'];
     }
-    $stmt->close();
+  }
+  $stmt->close();
 }
 ?>
 
@@ -43,9 +43,9 @@ if ($iduser) {
     <!-- Panel Profil User -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
       <div class="image">
-        <img src="<?= url('uploads/user/' . htmlspecialchars($foto_user)); ?>" 
-             class="img-circle elevation-2" alt="User Image"
-             style="width: 35px; height: 35px; object-fit: cover;">
+        <img src="<?= url('uploads/user/' . htmlspecialchars($foto_user)); ?>"
+          class="img-circle elevation-2" alt="User Image"
+          style="width: 35px; height: 35px; object-fit: cover;">
       </div>
       <div class="info">
         <a href="<?= url('dashboard.php?hal=user/profil'); ?>" class="d-block">
@@ -58,11 +58,28 @@ if ($iduser) {
     <!-- Sidebar Menu -->
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-        <li class="nav-item"><a href="dashboard.php" class="nav-link"><i class="nav-icon fas fa-home"></i><p>Dashboard</p></a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=user/daftaruser" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Kelola User</p></a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=kategori/daftarkategori" class="nav-link"><i class="nav-icon fas fa-folder"></i><p>Kategori</p></a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=konten/daftarkonten" class="nav-link"><i class="nav-icon fas fa-newspaper"></i><p>Konten</p></a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=komentar/daftarkomentar" class="nav-link"><i class="nav-icon fas fa-comments"></i><p>Komentar</p></a></li>
+        <li class="nav-item"><a href="dashboard.php" class="nav-link"><i class="nav-icon fas fa-home"></i>
+            <p>Dashboard</p>
+          </a></li>
+        <li class="nav-item"><a href="dashboard.php?hal=user/daftaruser" class="nav-link"><i class="nav-icon fas fa-users"></i>
+            <p>Kelola User</p>
+          </a></li>
+        <li class="nav-item"><a href="dashboard.php?hal=kategori/daftarkategori" class="nav-link"><i class="nav-icon fas fa-folder"></i>
+            <p>Kategori</p>
+          </a></li>
+        <li class="nav-item"><a href="dashboard.php?hal=konten/daftarkonten" class="nav-link"><i class="nav-icon fas fa-newspaper"></i>
+            <p>Konten</p>
+          </a></li>
+        <li class="nav-item"><a href="dashboard.php?hal=komentar/daftarkomentar" class="nav-link"><i class="nav-icon fas fa-comments"></i>
+            <p>Komentar</p>
+          </a></li>
+        <li class="nav-item">
+          <a href="dashboard.php?hal=laporan/daftarlaporan" class="nav-link">
+            <i class="fas fa-chart-line"></i>
+            <p>Laporan</p>
+          </a>
+        </li>
+
       </ul>
     </nav>
   </div>

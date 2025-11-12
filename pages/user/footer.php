@@ -1,20 +1,66 @@
 <?php
 // ==============================================
 // File: pages/user/footer.php
-// Deskripsi: Footer dan script JS admin CMSMAHDI
+// Deskripsi: Footer & script plugin untuk Admin CMS Mahdi
 // ==============================================
 ?>
-<footer class="main-footer text-center">
-  <strong>&copy; <?= date('Y'); ?> <?= $site_name; ?></strong> — Dashboard Admin
-</footer>
+  </div> <!-- /.wrapper -->
 
-</div> <!-- end of .wrapper -->
+  <!-- jQuery -->
+  <script src="<?= BASE_URL ?>asset/plugins/jquery/jquery.min.js"></script>
 
-<!-- JS AdminLTE & Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= url('asset/dist/js/jquery.min.js'); ?>"></script>
-<script src="<?= url('asset/dist/js/bootstrap.bundle.min.js'); ?>"></script> <!-- Sudah termasuk Popper.js -->
-<script src="<?= url('asset/dist/js/adminlte.min.js'); ?>"></script>
-<script src="<?= url('asset/js/custom.js'); ?>"></script> <!-- opsional: script tambahan -->
+  <!-- Bootstrap -->
+  <script src="<?= BASE_URL ?>asset/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AdminLTE -->
+  <script src="<?= BASE_URL ?>asset/dist/js/adminlte.min.js"></script>
+
+  <!-- DataTables -->
+  <script src="<?= BASE_URL ?>asset/plugins/datatables/datatables.min.js"></script>
+
+  <!-- Summernote -->
+  <script src="<?= BASE_URL ?>asset/plugins/summernote/summernote-bs4.min.js"></script>
+
+  <!-- ChartJS -->
+  <script src="<?= BASE_URL ?>asset/plugins/chartjs/chart.min.js"></script>
+
+  <!-- FontAwesome -->
+  <script src="<?= BASE_URL ?>asset/plugins/fontawesome/js/all.min.js"></script>
+
+  <!-- Inisialisasi umum -->
+  <script>
+    $(document).ready(function () {
+      // Aktifkan DataTables
+      $('.datatable').DataTable({
+        responsive: true,
+        autoWidth: false,
+        language: {
+          url: "https://cdn.datatables.net/plug-ins/1.10.21/i18n/Indonesian.json"
+        }
+      });
+
+      
+      // Tooltip FontAwesome
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+  </script>
+  <script src="asset/pluggin/summernote/summernote-bs4.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.summernote').summernote({
+      height: 250,
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview']]
+      ]
+    });
+  });
+</script>
+
 </body>
 </html>

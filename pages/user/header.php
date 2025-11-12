@@ -1,25 +1,68 @@
 <?php
 // ==============================================
 // File: pages/user/header.php
-// Deskripsi: Bagian <head> untuk halaman admin CMSMAHDI
+// Deskripsi: Header utama untuk layout Admin CMS Mahdi (Admin / Editor)
 // ==============================================
+
+require_once __DIR__ . '/../../includes/path.php';
+require_once INCLUDES_PATH . 'konfig.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= isset($judul_halaman) ? $judul_halaman . " | " . $site_name : $site_name; ?></title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title><?= htmlspecialchars($site_name); ?> - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- AdminLTE & Bootstrap CSS -->
-  <link rel="stylesheet" href="<?= url('asset/dist/css/adminlte.min.css'); ?>">
-  <link rel="stylesheet" href="<?= url('asset/dist/plugins/fontawesome-free/css/all.min.css'); ?>"> <!-- Font Awesome -->
-  <link rel="stylesheet" href="<?= url('asset/css/custom.css'); ?>"> <!-- opsional: gaya tambahan -->
+  <!-- Favicon -->
+  <link rel="icon" href="<?= BASE_URL ?>asset/dist/img/logo.png" type="image/png">
 
-  <!-- Ikon & Favicon -->
-  <link rel="icon" href="<?= url('asset/img/favicon.png'); ?>">
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>asset/plugins/fontawesome/css/all.min.css">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>asset/plugins/bootstrap/css/bootstrap.min.css">
+
+  <!-- AdminLTE -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>asset/dist/css/adminlte.min.css">
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>asset/plugins/datatables/datatables.min.css">
+
+  <!-- Summernote -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>asset/plugins/summernote/summernote-bs4.min.css">
+
+  <!-- Custom CSS -->
+  <style>
+    .content-wrapper {
+      background-color: #f4f6f9;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .table img {
+      border-radius: 6px;
+    }
+
+    .note-editor {
+      border-radius: 8px;
+    }
+
+    .main-sidebar {
+      background: #343a40;
+    }
+
+    .main-footer {
+      background: #fff;
+      border-top: 1px solid #dee2e6;
+      padding: 10px;
+    }
+  </style>
 </head>
-
 <body class="hold-transition sidebar-mini layout-fixed">
-  <div class="wrapper">
+<div class="wrapper">

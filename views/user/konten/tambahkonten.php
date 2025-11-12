@@ -95,10 +95,4 @@ document.getElementById('gambarInput').addEventListener('change', function(e){
   }
 });
 </script>
-<script>
-$(document).ready(function() {
-  $('.summernote').summernote({
-    height: 250
-  });
-});
-</script>
+
