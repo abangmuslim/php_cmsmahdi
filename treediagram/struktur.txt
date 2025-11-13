@@ -1,9 +1,0 @@
-| Modul                         | Admin | Editor | Pengunjung |
-| ----------------------------- | ----- | ------ | ---------- |
-| **Landing (index.php)**       | ✅     | ✅      | ✅          |
-| **Dashboard (dashboard.php)** | ✅     | ✅      | ❌          |
-| **User Management**           | ✅     | ❌      | ❌          |
-| **Kategori**                  | ✅     | ✅      | ❌          |
-| **Konten**                    | ✅     | ✅      | ❌          |
-| **Komentar**                  | ✅     | ✅      | ❌          |
-| **Laporan (opsional)**        | ✅     | ❌      | ❌          |

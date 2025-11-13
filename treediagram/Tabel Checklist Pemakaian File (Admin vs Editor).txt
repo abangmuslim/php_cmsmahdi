@@ -1,0 +1,45 @@
+| Modul                         | Admin | Editor | Pengunjung |
+| ----------------------------- | ----- | ------ | ---------- |
+| **Landing (index.php)**       | ✅    | ✅    | ✅         |
+| **Dashboard (dashboard.php)** | ✅    | ✅    | ❌         |
+| **User Management**           | ✅    | ❌    | ❌         |
+| **Kategori**                  | ✅    | ✅    | ❌         |
+| **Konten**                    | ✅    | ✅    | ❌         |
+| **Komentar**                  | ✅    | ✅    | ❌         |
+| **Laporan (opsional)**        | ✅    | ❌    | ❌         |
+| ----------------------------- | ----- | ------ | ---------- |
+
+
+| **Folder / File**                                     | **Admin** | **Editor** | **Keterangan / Catatan Implementasi**                                                      |
+| ----------------------------------------------------- | :-------: | :--------: | ------------------------------------------------------------------------------------------ |
+| `pages/user/header.php`                               |     ✅     |      ✅     | Bisa dipakai bersama (isi `<head>` umum untuk dashboard).                                  |
+| `pages/user/navbar.php`                               |     ✅     |      ✅     | Bisa dipakai bersama, hanya bedakan nama user/role dinamis (`$_SESSION['role']`).          |
+| `pages/user/sidebar.php`                              |     ⚠️    |     ⚠️     | Gunakan 1 file saja, tapi tampilkan menu berbeda dengan `if ($role == 'admin')`.           |
+| `pages/user/footer.php`                               |     ✅     |      ✅     | Dipakai bersama, berisi JS umum.                                                           |
+| `pages/editor/header.php`                             |     ❌     |      ❌     | **Tidak perlu dibuat**, bisa hapus/abaikan, gunakan `pages/user/header.php`.               |
+| `pages/editor/navbar.php`                             |     ❌     |      ❌     | Tidak perlu, cukup `pages/user/navbar.php`.                                                |
+| `pages/editor/sidebar.php`                            |     ❌     |      ❌     | Tidak perlu, karena sidebar bisa dikondisikan berdasarkan role.                            |
+| `pages/editor/footer.php`                             |     ❌     |      ❌     | Tidak perlu, gunakan yang sama dari `pages/user/footer.php`.                               |
+| `views/user/dashboardadmin.php`                       |     ✅     |      ❌     | Hanya untuk admin (statistik, log aktivitas, jumlah user, dll).                            |
+| `views/user/dashboardeditor.php`                      |     ❌     |      ✅     | Hanya untuk editor (ringkas: jumlah konten, komentar, kategori).                           |
+| `views/user/user/*`                                   |     ✅     |      ❌     | CRUD user hanya untuk admin, editor **tidak boleh akses**.                                 |
+| `views/user/kategori/*`                               |     ✅     |      ✅     | Bisa dipakai bersama (kategori global).                                                    |
+| `views/user/konten/*`                                 |     ✅     |      ✅     | Bisa dipakai bersama, editor dan admin bisa CRUD konten.                                   |
+| `views/user/komentar/*`                               |     ✅     |      ✅     | Bisa dipakai bersama.                                                                      |
+| `views/user/laporan/*`                                |     ✅     |     ⚠️     | Laporan boleh dibuka editor jika dibutuhkan, tapi bisa diatur hanya read-only.             |
+| `views/landing/*`                                     |     ✅     |      ✅     | Dipakai publik (semua user, termasuk admin/editor bila logout).                            |
+| `views/auth/*`                                        |     ✅     |      ✅     | Dipakai bersama (login, logout, proses login).                                             |
+| `includes/*`                                          |     ✅     |      ✅     | Dipakai semua role, termasuk front office.                                                 |
+| `dashboard.php`                                       |     ✅     |      ✅     | Satu file routing backend, berisi logika pembatasan akses berdasarkan `$_SESSION['role']`. |
+| `.htaccess`, `index.php`, `README.md`, `struktur.txt` |     ✅     |      ✅     | Global, tidak perlu dipisahkan.                                                            |
+
+
+| Kategori                                      | Jumlah File | Status        | Penjelasan                                                       |
+| --------------------------------------------- | ----------- | ------------- | ---------------------------------------------------------------- |
+| Layout `pages/user/`                          | 4 file      | ✅ Shared      | Gunakan untuk **kedua role**, kondisikan menu di sidebar.        |
+| Layout `pages/editor/`                        | 4 file      | ❌ Redundant   | Bisa dihapus, karena fungsinya sama dengan `pages/user/`.        |
+| Dashboard                                     | 2 file      | ⚠️ Terpisah   | `dashboardadmin.php` (Admin) dan `dashboardeditor.php` (Editor). |
+| Modul CRUD (`kategori`, `konten`, `komentar`) | 3 folder    | ✅ Shared      | Digunakan bersama tanpa perubahan besar.                         |
+| Modul `user`                                  | 1 folder    | 🔒 Admin-only | Hanya bisa diakses admin, editor ditolak di routing.             |
+| Modul `laporan`                               | 1 folder    | ⚙️ Opsional   | Bisa read-only untuk editor jika dibutuhkan.                     |
+| Frontend `landing` & `auth`                   | Semua       | ✅ Shared      | Tidak terkait role backend.                                      |

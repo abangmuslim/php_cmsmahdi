@@ -29,7 +29,7 @@ $result = $stmt->get_result();
 if ($result->num_rows === 1) {
     $user = $result->fetch_assoc();
 
-    // Verifikasi password hash (modern)
+    // Verifikasi password hash
     if (password_verify($password, $user['password'])) {
 
         // Set session login
@@ -38,8 +38,17 @@ if ($result->num_rows === 1) {
         $_SESSION['role']     = $user['role'];
         $_SESSION['username'] = $user['username'];
 
-        // Redirect berdasarkan role
-        header("Location: " . url('dashboard.php'));
+        // ==============================================
+        // 🔁 Redirect sesuai role (konsisten dengan struktur CMS)
+        // ==============================================
+        if ($user['role'] === 'admin') {
+            header("Location: " . BASE_URL . "dashboard.php?role=admin");
+        } elseif ($user['role'] === 'editor') {
+            header("Location: " . BASE_URL . "dashboard.php?role=editor");
+        } else {
+            // Role tidak dikenal, arahkan ke halaman utama
+            header("Location: " . BASE_URL . "index.php?pesan=Role+tidak+dikenal");
+        }
         exit;
 
     } else {

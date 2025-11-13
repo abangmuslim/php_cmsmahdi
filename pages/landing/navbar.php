@@ -56,30 +56,35 @@ $current_label = $label_map[$current_page] ?? ucfirst(str_replace(['-', '_', '.p
         ?>
 
         <!-- Menu login/dashboard otomatis -->
-        <?php if (empty($_SESSION['role'])): ?>
-          <li class="nav-item">
-            <a class="nav-link <?= ($current_page === 'login') ? 'active fw-bold' : '' ?>" href="<?= BASE_URL ?>login">
-              <i class="fas fa-sign-in-alt me-1"></i> Login
-            </a>
-          </li>
-        <?php else: ?>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-               data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user-circle me-1"></i>
-              <?= htmlspecialchars($_SESSION['namauser'] ?? ucfirst($_SESSION['role'])); ?>
-              (<?= htmlspecialchars($_SESSION['role']); ?>)
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="<?= BASE_URL ?>dashboard.php">
-                <i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-              </li>
-              <li><a class="dropdown-item" href="<?= BASE_URL ?>views/auth/logout.php">
-                <i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-              </li>
-            </ul>
-          </li>
-        <?php endif; ?>
+<?php if (empty($_SESSION['role'])): ?>
+  <li class="nav-item">
+    <a class="nav-link <?= ($current_page === 'login') ? 'active fw-bold' : '' ?>" href="<?= BASE_URL ?>login">
+      <i class="fas fa-sign-in-alt me-1"></i> Login
+    </a>
+  </li>
+<?php else: ?>
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+       data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fas fa-user-circle me-1"></i>
+      <?= htmlspecialchars($_SESSION['namauser'] ?? ucfirst($_SESSION['role'])); ?>
+      (<?= htmlspecialchars($_SESSION['role']); ?>)
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+      <li>
+        <a class="dropdown-item" href="<?= BASE_URL ?>dashboard.php">
+          <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="<?= BASE_URL ?>views/auth/logout.php">
+          <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </li>
+<?php endif; ?>
+
       </ul>
     </div>
   </div>

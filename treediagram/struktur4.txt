@@ -1,27 +1,105 @@
 CMSMAHDI/
+│
 ├─ pages/
-│  ├─ editor/
-│  ├─ landing/
-│  └─ user/
+│  │
+│  ├─ user/                     ← layout untuk role admin (back office)
+│  │  ├─ header.php             ← head, link CSS, judul halaman
+│  │  ├─ navbar.php             ← navigasi atas admin
+│  │  ├─ sidebar.php            ← sidebar menu admin (kelola user, kategori, konten, komentar)
+│  │  ├─ sidebareditor.php            ← sidebar menu admin (kelola user, kategori, konten, komentar)
+│  │  └─ footer.php             ← script JS dan footer dashboard
+│  │
+│  └─ landing/                  ← layout tampilan publik (front office / portal berita)
+│     ├─ header.php             ← head HTML umum, meta tag SEO, CSS portal
+│     ├─ navbar.php             ← menu utama (Home, Kategori, Tentang, Login)
+│     ├─ footer.php             ← footer publik, hak cipta, JS
+│     ├─ sidebar-left.php       ← opsional: daftar kategori, berita populer
+│     └─ sidebar-right.php      ← opsional: widget, tag cloud, iklan, dsb.
+│
+│
+├─ asset/
+│  ├─ dist/                     ← komponen utama AdminLTE (CSS, JS, icons, dsb)
+│  │  ├─ css/
+│  │  ├─ js/
+│  │  └─ img/
+│  │
+│  └─ pluggin/                  ← plugin tambahan AdminLTE (chart, datatables, wysiwyg, dsb)
+│     ├─ datatables/
+│     ├─ chartjs/
+│     └─ summernote/
+│
 │
 ├─ views/
-│  ├─ auth/
-│  ├─ landing/
-│  └─ user/
-│     ├─ user/
-│     ├─ kategori/
-│     ├─ komentar/
-│     ├─ konten/
-│     ├─ dashboardadmin.php
-│     └─ dashboardeditor.php
+│  │
+│  ├─ auth/                     ← halaman otentikasi (login, register, logout)
+│  │  ├─ login.php              ← form login user (admin/editor)
+│  │  ├─ register.php           ← form pendaftaran (opsional)
+│  │  ├─ logout.php             ← proses logout (hapus session)
+│  │  └─ proseslogin.php        ← proses backend login (cek ke DB, set session)
+│  │
+│  ├─ user/                     ← konten dashboard untuk user login (extend dari pages/user atau pages/editor)
+│  │  │
+│  │  ├─ user/
+│  │  │  ├─ prosesuser.php      ← logic CRUD user (tambah/edit/hapus)
+│  │  │  ├─ daftaruser.php      ← list user untuk admin
+│  │  │  ├─ tambahuser.php      ← form tambah user
+│  │  │  └─ edituser.php        ← form edit user
+│  │  │
+│  │  ├─ kategori/
+│  │  │  ├─ proseskategori.php
+│  │  │  ├─ daftarkategori.php
+│  │  │  ├─ tambahkategori.php
+│  │  │  └─ editkategori.php
+│  │  │
+│  │  ├─ komentar/
+│  │  │  ├─ proseskomentar.php
+│  │  │  ├─ daftarkomentar.php
+│  │  │  ├─ tambahkomentar.php
+│  │  │  └─ editkomentar.php
+│  │  │
+│  │  ├─ konten/
+│  │  │  ├─ proseskonten.php    ← logic CRUD konten
+│  │  │  ├─ daftarkonten.php
+│  │  │  ├─ tambahkonten.php
+│  │  │  └─ editkonten.php
+│  │  │
+│  │  ├─ laporan/
+│  │  │  ├─ daftarlaporan.php
+│  │  │  └─ cetaklaporan.php
+│  │  │
+│  │  ├─ dashboardadmin.php     ← dashboard utama untuk admin
+│  │  └─ dashboardeditor.php    ← dashboard utama untuk editor
+│  │
+│  └─ landing/                  ← tampilan publik (extend dari pages/landing)
+│     ├─ home.php               ← halaman utama portal (daftar artikel)
+│     ├─ detilkonten.php        ← halaman detail artikel
+│     ├─ kategori.php           ← daftar artikel per kategori
+│     ├─ tentang.php            ← halaman tentang CMS
+│     ├─ kontak.php             ← halaman kontak (opsional)
+│     ├─ 404.php                ← halaman notfound
+│     └─ proseskomentar.php     ← logic komentar publik (insert & tampil)
 │
-├─ includes/
 │
-├─ uploads/
-│  ├─ user/
-│  ├─ konten/
-│  └─ komentar/
+├─ includes/                    ← fungsi & keamanan (dibaca semua halaman)
+│  ├─ koneksi.php               ← koneksi database (utama)
+│  ├─ konfig.php                ← variabel global (base_url, site_name, dll)
+│  ├─ ceksession.php            ← pengecekan login, redirect jika belum login
+│  ├─ fungsiupload.php          ← helper upload gambar (validasi tipe & ukuran)
+│  ├─ fungsivalidasi.php        ← sanitasi input & validasi form
+│  └─ htaccess/                 ← file keamanan .htaccess untuk referensi
 │
-├─ dashboard.php
-├─ index.php
-└─ README.md
+│
+├─ database/
+│  └─ cmsmahdi.sql              ← file dump struktur database (opsional)
+│
+├─ uploads/                     ← penyimpanan file publik (gambar user & konten)
+│  ├─ user/                     ← foto profil user
+│  ├─ konten/                   ← gambar artikel/konten
+│  ├─ komentar/                 ← gambar dari komentar (opsional)
+│  └─ .htaccess                 ← keamanan: blok eksekusi file PHP
+│
+├─ dashboard.php                ← pusat halaman backend (routing admin/editor)
+├─ index.php                    ← pusat halaman publik (routing landing)
+├─ .htaccess                    ← redirect URL, blok akses direktori penting
+├─ README.md                    ← dokumentasi umum proyek
+└─ struktur.txt                 ← dokumentasi struktur folder (file ini)

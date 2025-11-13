@@ -1,7 +1,7 @@
 <?php
 // ====================================================
 // File: views/auth/login.php
-// Deskripsi: Halaman login untuk CMSMAHDI (zona publik, password_hash)
+// Deskripsi: Halaman login untuk CMS Mahdi (zona publik, password_hash)
 // ====================================================
 
 require_once __DIR__ . '/../../includes/path.php';
@@ -9,58 +9,75 @@ require_once INCLUDES_PATH . 'konfig.php';
 require_once INCLUDES_PATH . 'koneksi.php';
 require_once INCLUDES_PATH . 'fungsivalidasi.php';
 
+// Pastikan sesi aktif
 if (session_status() === PHP_SESSION_NONE) {
-  session_start();
+    session_start();
 }
 
-// Redirect jika sudah login
+// ====================================================
+// 1️⃣ Cek apakah user sudah login
+// ====================================================
 if (isset($_SESSION['role'])) {
-  if ($_SESSION['role'] === 'admin') {
-    header("Location: " . BASE_URL . "dashboard.php");
-    exit();
-  } elseif ($_SESSION['role'] === 'editor') {
-    header("Location: " . BASE_URL . "pages/editor/dashboardeditor.php");
-    exit();
-  }
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: " . BASE_URL . "dashboard.php");
+        exit();
+    } elseif ($_SESSION['role'] === 'editor') {
+        header("Location: " . BASE_URL . "dashboard.php?hal=dashboardeditor");
+        exit();
+    }
 }
 
-// Proses login
+// ====================================================
+// 2️⃣ Inisialisasi variabel error
+// ====================================================
 $error = '';
+
+// ====================================================
+// 3️⃣ Proses login jika form dikirim
+// ====================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $username = bersihkan($_POST['username'] ?? '');
-  $password = $_POST['password'] ?? '';
+    $username = bersihkan($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-  if ($username === '' || $password === '') {
-    $error = "Username dan password wajib diisi.";
-  } else {
-    $stmt = $koneksi->prepare("SELECT * FROM user WHERE username = ? LIMIT 1");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-      $user = $result->fetch_assoc();
-
-      // Gunakan password_verify untuk hash modern
-      if (password_verify($password, $user['password'])) {
-        $_SESSION['iduser']    = $user['iduser'];
-        $_SESSION['namauser']  = $user['namauser'];
-        $_SESSION['role']      = $user['role'];
-        $_SESSION['username']  = $user['username'];
-
-        if ($user['role'] === 'admin') {
-          header("Location: " . BASE_URL . "dashboard.php");
-        } else {
-          header("Location: " . BASE_URL . "pages/editor/dashboardeditor.php");
-        }
-        exit();
-      } else {
-        $error = "Password salah.";
-      }
+    if ($username === '' || $password === '') {
+        $error = "Username dan password wajib diisi.";
     } else {
-      $error = "Username tidak ditemukan.";
+        $stmt = $koneksi->prepare("SELECT * FROM user WHERE username = ? LIMIT 1");
+        if ($stmt) {
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+
+                // Verifikasi password hash
+                if (password_verify($password, $user['password'])) {
+                    // Simpan sesi user
+                    $_SESSION['iduser']    = $user['iduser'];
+                    $_SESSION['namauser']  = $user['namauser'];
+                    $_SESSION['username']  = $user['username'];
+                    $_SESSION['role']      = $user['role'];
+
+                    // Redirect berdasarkan role
+                    if ($user['role'] === 'admin') {
+                        header("Location: " . BASE_URL . "dashboard.php");
+                    } else {
+                        header("Location: " . BASE_URL . "dashboard.php?hal=dashboardeditor");
+                    }
+                    exit();
+                } else {
+                    $error = "Password salah.";
+                }
+            } else {
+                $error = "Username tidak ditemukan.";
+            }
+
+            $stmt->close();
+        } else {
+            $error = "Terjadi kesalahan sistem (gagal menyiapkan query).";
+        }
     }
-  }
 }
 ?>
 

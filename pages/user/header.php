@@ -9,6 +9,7 @@ require_once INCLUDES_PATH . 'konfig.php';
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +21,7 @@ require_once INCLUDES_PATH . 'konfig.php';
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="<?= BASE_URL ?>asset/plugins/fontawesome/css/all.min.css">
@@ -64,5 +65,6 @@ require_once INCLUDES_PATH . 'konfig.php';
     }
   </style>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
+
+<body class="hold-transition sidebar-mini layout-fixed sidebar-collapse">
+  <div class="wrapper">

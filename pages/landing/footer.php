@@ -19,11 +19,14 @@
   </div>
 </footer>
 
-<!-- JS: Bootstrap, jQuery, AdminLTE -->
-<script src="<?= BASE_URL; ?>/asset/dist/js/bootstrap.bundle.min.js"></script>
+<!-- JS: jQuery, Bootstrap, AdminLTE -->
+<!-- JS: jQuery harus duluan -->
 <script src="<?= BASE_URL; ?>/asset/plugins/jquery/jquery.min.js"></script>
+<script src="<?= BASE_URL; ?>/asset/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_URL; ?>/asset/dist/js/adminlte.min.js"></script>
+
 
 </div> <!-- wrapper -->
 </body>
 </html>
+

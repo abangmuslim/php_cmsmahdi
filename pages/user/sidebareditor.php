@@ -1,7 +1,7 @@
 <?php
 // ==============================================
-// File: pages/user/sidebar.php
-// Deskripsi: Sidebar menu admin CMSMAHDI (dengan foto user aktif)
+// File: pages/user/sidebareditor.php
+// Deskripsi: Sidebar menu khusus untuk Editor CMS Mahdi
 // ==============================================
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../includes/path.php';
 require_once __DIR__ . '/../../includes/koneksi.php';
 
 // Ambil data user login
-$foto_user = 'default.png'; // default
+$foto_user = 'default.png';
 $nama_user = $_SESSION['namauser'] ?? 'Pengguna';
 $role_user = $_SESSION['role'] ?? 'Guest';
 $iduser    = $_SESSION['iduser'] ?? 0;
@@ -29,6 +29,9 @@ if ($iduser) {
   }
   $stmt->close();
 }
+
+// Tentukan halaman aktif
+$current_page = $_GET['hal'] ?? '';
 ?>
 
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -37,45 +40,58 @@ if ($iduser) {
     <span class="brand-text font-weight-bold" style="font-size: 1.3rem; letter-spacing: 1px;">CMSMAHDI</span>
   </a>
 
-
   <!-- Sidebar -->
   <div class="sidebar">
     <!-- Panel Profil User -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
       <div class="image">
         <img src="<?= url('uploads/user/' . htmlspecialchars($foto_user)); ?>"
-          class="img-circle elevation-2" alt="User Image"
-          style="width: 35px; height: 35px; object-fit: cover;">
+             class="img-circle elevation-2" alt="User Image"
+             style="width: 35px; height: 35px; object-fit: cover;">
       </div>
       <div class="info">
-        <a href="<?= url('dashboard.php?hal=user/profil'); ?>" class="d-block">
+        <a href="<?= url('dashboard.php?hal=user/profil'); ?>" class="d-block text-white">
           <?= htmlspecialchars($nama_user); ?>
         </a>
         <small class="text-muted text-sm"><?= ucfirst($role_user); ?></small>
       </div>
     </div>
 
-    <!-- Sidebar Menu -->
+    <!-- Menu Sidebar -->
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-        <li class="nav-item"><a href="dashboard.php" class="nav-link"><i class="nav-icon fas fa-home"></i>
-            <p>Dashboard</p>
-          </a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=user/daftaruser" class="nav-link"><i class="nav-icon fas fa-users"></i>
-            <p>Kelola User</p>
-          </a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=kategori/daftarkategori" class="nav-link"><i class="nav-icon fas fa-folder"></i>
-            <p>Kategori</p>
-          </a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=konten/daftarkonten" class="nav-link"><i class="nav-icon fas fa-newspaper"></i>
-            <p>Konten</p>
-          </a></li>
-        <li class="nav-item"><a href="dashboard.php?hal=komentar/daftarkomentar" class="nav-link"><i class="nav-icon fas fa-comments"></i>
-            <p>Komentar</p>
-          </a></li>
+
         <li class="nav-item">
-          <a href="dashboard.php?hal=laporan/daftarlaporan" class="nav-link">
-            <i class="fas fa-chart-line"></i>
+          <a href="dashboard.php" class="nav-link <?= ($current_page == '') ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-home"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="dashboard.php?hal=kategori/daftarkategori" class="nav-link <?= (strpos($current_page, 'kategori') === 0) ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-folder"></i>
+            <p>Kategori</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="dashboard.php?hal=konten/daftarkonten" class="nav-link <?= (strpos($current_page, 'konten') === 0) ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-newspaper"></i>
+            <p>Konten</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="dashboard.php?hal=komentar/daftarkomentar" class="nav-link <?= (strpos($current_page, 'komentar') === 0) ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-comments"></i>
+            <p>Komentar</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="dashboard.php?hal=laporan/laporanharian" class="nav-link <?= (strpos($current_page, 'laporan') === 0) ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-chart-bar"></i>
             <p>Laporan</p>
           </a>
         </li>

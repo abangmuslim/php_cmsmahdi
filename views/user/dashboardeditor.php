@@ -1,127 +1,113 @@
 <?php
-include '../../includes/ceksession.php';
-include '../../includes/koneksi.php';
-include '../../pages/editor/header.php';
-include '../../pages/editor/navbar.php';
-include '../../pages/editor/sidebar.php';
+// =======================================
+// File: views/user/dashboardeditor.php
+// Deskripsi: Dashboard utama untuk Editor CMS Mahdi
+// =======================================
 
-// ambil data untuk statistik
-$total_konten   = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM konten"))['jml'];
-$total_komentar = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM komentar"))['jml'];
+require_once __DIR__ . '/../../includes/koneksi.php';
+require_once __DIR__ . '/../../includes/konfig.php';
 
-// ambil data ringkas konten dan komentar
-$qkonten = mysqli_query($conn, "SELECT judulkonten, tanggal FROM konten ORDER BY tanggal DESC LIMIT 5");
-$qkomentar = mysqli_query($conn, "SELECT nama, isikomentar, tanggal FROM komentar ORDER BY tanggal DESC LIMIT 5");
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+// Data ringkasan
+$iduser = (int)($_SESSION['iduser'] ?? 0);
+$namauser = htmlspecialchars($_SESSION['namauser'] ?? 'Editor');
+
+// Hitung data utama
+$total_kategori = $koneksi->query("SELECT COUNT(*) AS jml FROM kategori")->fetch_assoc()['jml'] ?? 0;
+$total_konten   = $koneksi->query("SELECT COUNT(*) AS jml FROM konten WHERE iduser = $iduser")->fetch_assoc()['jml'] ?? 0;
+$total_komentar = $koneksi->query("SELECT COUNT(*) AS jml FROM komentar")->fetch_assoc()['jml'] ?? 0;
+$total_laporan  = $koneksi->query("SELECT COUNT(*) AS jml FROM konten WHERE status='publish'")->fetch_assoc()['jml'] ?? 0;
 ?>
 
-<!-- Content Wrapper -->
-<div class="content-wrapper p-3">
-  <section class="content">
-    <div class="container-fluid">
+<!-- ======================================= -->
+<!-- Konten Dashboard Editor -->
+<!-- ======================================= -->
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="mb-0"><i class="fas fa-tachometer-alt mr-1 text-primary"></i> Dashboard Editor</h4>
+        <p class="text-muted mb-0">Selamat datang kembali, <strong><?= $namauser; ?></strong> 👋</p>
+      </div>
+      <div>
+        <small class="text-muted">Peran: <span class="badge badge-info">Editor</span></small>
+      </div>
+    </div>
+  </section>
 
-      <!-- Statistik Ringkas -->
+  <section class="content mt-3">
+    <div class="container-fluid">
       <div class="row">
-        <div class="col-md-6 col-sm-12 mb-3">
+        <!-- Kategori -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3><?= $total_kategori; ?></h3>
+              <p>Kategori</p>
+            </div>
+            <div class="icon"><i class="fas fa-folder"></i></div>
+            <a href="dashboard.php?hal=kategori/daftarkategori" class="small-box-footer">
+              Kelola Kategori <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Konten -->
+        <div class="col-lg-3 col-6">
           <div class="small-box bg-success">
             <div class="inner">
-              <h3><?= $total_konten ?></h3>
-              <p>Total Konten</p>
+              <h3><?= $total_konten; ?></h3>
+              <p>Konten Anda</p>
             </div>
-            <div class="icon">
-              <i class="fas fa-newspaper"></i>
-            </div>
-            <a href="?page=konten/daftarkonten" class="small-box-footer">
-              Lihat Konten <i class="fas fa-arrow-circle-right"></i>
+            <div class="icon"><i class="fas fa-newspaper"></i></div>
+            <a href="dashboard.php?hal=konten/daftarkonten" class="small-box-footer">
+              Lihat Semua <i class="fas fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
 
-        <div class="col-md-6 col-sm-12 mb-3">
+        <!-- Komentar -->
+        <div class="col-lg-3 col-6">
           <div class="small-box bg-warning">
             <div class="inner">
-              <h3><?= $total_komentar ?></h3>
-              <p>Total Komentar</p>
+              <h3><?= $total_komentar; ?></h3>
+              <p>Komentar</p>
             </div>
-            <div class="icon">
-              <i class="fas fa-comments"></i>
+            <div class="icon"><i class="fas fa-comments"></i></div>
+            <a href="dashboard.php?hal=komentar/daftarkomentar" class="small-box-footer">
+              Tinjau Komentar <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Laporan -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3><?= $total_laporan; ?></h3>
+              <p>Laporan Konten</p>
             </div>
-            <a href="?page=komentar/daftarkomentar" class="small-box-footer">
-              Lihat Komentar <i class="fas fa-arrow-circle-right"></i>
+            <div class="icon"><i class="fas fa-chart-line"></i></div>
+            <a href="dashboard.php?hal=laporan/daftarlaporan" class="small-box-footer">
+              Lihat Laporan <i class="fas fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>
       </div>
 
-      <!-- Ringkasan Data -->
-      <div class="row">
-        <!-- Konten Terbaru -->
-        <div class="col-lg-6 col-12 mb-3">
-          <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-              <h6 class="m-0">Konten Terbaru</h6>
-            </div>
-            <div class="card-body p-2">
-              <table class="table table-sm table-striped mb-0">
-                <thead>
-                  <tr>
-                    <th>Judul</th>
-                    <th>Tanggal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php while ($k = mysqli_fetch_assoc($qkonten)) { ?>
-                    <tr>
-                      <td><?= htmlspecialchars($k['judulkonten']) ?></td>
-                      <td><?= date('d/m/Y', strtotime($k['tanggal'])) ?></td>
-                    </tr>
-                  <?php } ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <!-- Aktivitas -->
+      <div class="card mt-3 shadow-sm">
+        <div class="card-header bg-light d-flex align-items-center">
+          <i class="fas fa-bullhorn text-primary mr-2"></i>
+          <h5 class="mb-0">Aktivitas Terbaru</h5>
         </div>
-
-        <!-- Komentar Terbaru -->
-        <div class="col-lg-6 col-12">
-          <div class="card shadow-sm">
-            <div class="card-header bg-info text-white">
-              <h6 class="m-0">Komentar Terbaru</h6>
-            </div>
-            <div class="card-body p-2">
-              <table class="table table-sm table-striped mb-0">
-                <thead>
-                  <tr>
-                    <th>Nama</th>
-                    <th>Komentar</th>
-                    <th>Tanggal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php while ($c = mysqli_fetch_assoc($qkomentar)) { ?>
-                    <tr>
-                      <td><?= htmlspecialchars($c['nama']) ?></td>
-                      <td><?= htmlspecialchars(substr($c['isikomentar'], 0, 40)) ?>...</td>
-                      <td><?= date('d/m/Y', strtotime($c['tanggal'])) ?></td>
-                    </tr>
-                  <?php } ?>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="card-body">
+          <p class="text-muted mb-0">Belum ada aktivitas terbaru. Silakan buat atau edit konten untuk memperbarui data di sini.</p>
         </div>
       </div>
-
     </div>
   </section>
 </div>
-
-<style>
-@media (max-width: 576px) {
-  .small-box .inner h3 { font-size: 1.5rem; }
-  .small-box p { font-size: 0.9rem; }
-  .card-header h6 { font-size: 0.9rem; }
-  table th, table td { font-size: 0.8rem; }
-}
-</style>
-
-<?php include '../../pages/editor/footer.php'; ?>
