@@ -40,7 +40,6 @@ if ($role === 'editor' && str_contains($hal, 'admin')) {
 
 // =======================================
 // 3️⃣ Bangun Path File View Secara Dinamis
-//    (Dukung struktur subfolder seperti user/daftaruser)
 // =======================================
 $halPath = explode('/', $hal);
 
@@ -50,6 +49,25 @@ if (count($halPath) > 1) {
 } else {
     // Contoh: hal=dashboardadmin → views/user/dashboardadmin.php
     $file = BASE_PATH . "/{$viewFolder}/{$hal}.php";
+}
+
+// =======================================
+// 🧭 Tambahan: Breadcrumb Otomatis ke Daftar Utama
+// =======================================
+if (!file_exists($file)) {
+    $parts = explode('/', $hal);
+    $parent = $parts[0] ?? '';
+
+    $fallbacks = [
+        'konten'   => 'konten/daftarkonten',
+        'user'     => 'user/daftaruser',
+        'kategori' => 'kategori/daftarkategori',
+        'komentar' => 'komentar/daftarkomentar',
+    ];
+
+    if (isset($fallbacks[$parent])) {
+        $file = BASE_PATH . "/{$viewFolder}/" . $fallbacks[$parent] . ".php";
+    }
 }
 
 // =======================================

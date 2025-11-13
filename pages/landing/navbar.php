@@ -11,8 +11,6 @@ require_once __DIR__ . '/../../includes/path.php';
 // Ambil nama halaman aktif dari URL
 $uri_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $segments = array_values(array_filter(explode('/', trim($uri_path, '/'))));
-
-// Ambil segmen terakhir untuk deteksi halaman aktif
 $current_page = $segments[count($segments) - 1] ?? 'beranda';
 $current_page = str_replace(['index.php'], '', $current_page);
 $current_page = $current_page ?: 'beranda';
@@ -34,7 +32,8 @@ $current_label = $label_map[$current_page] ?? ucfirst(str_replace(['-', '_', '.p
   <div class="container">
     <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>">CMS Mahdi</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -65,13 +64,19 @@ $current_label = $label_map[$current_page] ?? ucfirst(str_replace(['-', '_', '.p
           </li>
         <?php else: ?>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle <?= ($current_page === 'dashboard.php') ? 'active fw-bold' : '' ?>"
-               href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-              <i class="fas fa-user-circle me-1"></i> <?= ucfirst($_SESSION['role']); ?>
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i>
+              <?= htmlspecialchars($_SESSION['namauser'] ?? ucfirst($_SESSION['role'])); ?>
+              (<?= htmlspecialchars($_SESSION['role']); ?>)
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="<?= BASE_URL ?>dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
-              <li><a class="dropdown-item" href="<?= BASE_URL ?>views/auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="<?= BASE_URL ?>dashboard.php">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+              </li>
+              <li><a class="dropdown-item" href="<?= BASE_URL ?>views/auth/logout.php">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+              </li>
             </ul>
           </li>
         <?php endif; ?>
@@ -86,10 +91,34 @@ $current_label = $label_map[$current_page] ?? ucfirst(str_replace(['-', '_', '.p
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a href="<?= BASE_URL ?>">Beranda</a></li>
-        <?php if ($current_page !== 'beranda'): ?>
-          <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($current_label); ?></li>
-        <?php endif; ?>
+        <?php
+        // Jika halaman adalah artikel/id, tampilkan judul kontennya
+        if (strpos($_SERVER['REQUEST_URI'], '/artikel/') !== false) {
+            require_once INCLUDES_PATH . 'koneksi.php';
+            $parts = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
+            $idkonten = end($parts);
+            $judul = '';
+
+            if (is_numeric($idkonten)) {
+                $stmt = $koneksi->prepare("SELECT judulkonten FROM konten WHERE idkonten = ?");
+                $stmt->bind_param('i', $idkonten);
+                $stmt->execute();
+                $stmt->bind_result($judul);
+                $stmt->fetch();
+                $stmt->close();
+            }
+
+            if (!empty($judul)) {
+                echo '<li class="breadcrumb-item active" aria-current="page">' . htmlspecialchars($judul) . '</li>';
+            } else {
+                echo '<li class="breadcrumb-item active" aria-current="page">Artikel</li>';
+            }
+        } elseif ($current_page !== 'beranda') {
+            echo '<li class="breadcrumb-item active" aria-current="page">' . htmlspecialchars($current_label) . '</li>';
+        }
+        ?>
       </ol>
     </nav>
   </div>
 </div>
+

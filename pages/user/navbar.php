@@ -1,7 +1,7 @@
 <?php
 // ==============================================
 // File: pages/user/navbar.php
-// Deskripsi: Navbar + Breadcrumb otomatis CMS Mahdi
+// Deskripsi: Navbar + Breadcrumb otomatis CMS Mahdi (versi final sinkron routing dashboard)
 // ==============================================
 
 $namauser = $_SESSION['namauser'] ?? 'Pengguna';
@@ -25,19 +25,35 @@ function buat_breadcrumb_otomatis()
     // Pisahkan bagian path, contoh: user/tambahuser -> ['user', 'tambahuser']
     $parts = explode('/', $hal);
     $breadcrumb = [];
-    $url = 'dashboard.php';
 
     // Tambahkan link Dashboard sebagai awal
     $breadcrumb[] = '<li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>';
+
+    // Daftar fallback otomatis (sama seperti di dashboard.php)
+    $fallbacks = [
+        'konten'   => 'konten/daftarkonten',
+        'user'     => 'user/daftaruser',
+        'kategori' => 'kategori/daftarkategori',
+        'komentar' => 'komentar/daftarkomentar',
+    ];
 
     // Bangun link bertahap berdasarkan struktur
     for ($i = 0; $i < count($parts); $i++) {
         $segment = htmlspecialchars(ucfirst(str_replace(['_', '-'], ' ', $parts[$i])));
 
         if ($i < count($parts) - 1) {
-            // Bagian tengah breadcrumb (punya link)
-            $url .= '?hal=' . implode('/', array_slice($parts, 0, $i + 1));
-            $breadcrumb[] = '<li class="breadcrumb-item"><a href="' . htmlspecialchars($url) . '">' . $segment . '</a></li>';
+            // Deteksi apakah ini parent utama
+            $parent = $parts[$i];
+            $suburl = 'dashboard.php?hal=';
+
+            // Jika parent punya fallback, arahkan ke daftar utamanya
+            if (isset($fallbacks[$parent])) {
+                $suburl .= $fallbacks[$parent];
+            } else {
+                $suburl .= implode('/', array_slice($parts, 0, $i + 1));
+            }
+
+            $breadcrumb[] = '<li class="breadcrumb-item"><a href="' . htmlspecialchars($suburl) . '">' . $segment . '</a></li>';
         } else {
             // Bagian terakhir (aktif)
             $breadcrumb[] = '<li class="breadcrumb-item active">' . $segment . '</li>';
@@ -83,18 +99,19 @@ function judul_halaman_otomatis()
     </li>
   </ul>
 
-  <!-- Navigasi kanan -->
+    <!-- Navigasi kanan -->
   <ul class="navbar-nav ml-auto">
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="dropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <li class="nav-item dropdown user-menu">
+      <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
         <i class="fas fa-user-circle"></i> <?= htmlspecialchars($namauser); ?> (<?= htmlspecialchars($role); ?>)
       </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
-        <li><a class="dropdown-item" href="<?= url('user/profil.php'); ?>"><i class="fas fa-id-card me-2"></i> Profil</a></li>
-        <li><a class="dropdown-item" href="<?= url('views/auth/logout.php'); ?>"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+      <ul class="dropdown-menu dropdown-menu-right">
+        <li><a class="dropdown-item" href="<?= url('user/profil.php'); ?>"><i class="fas fa-id-card mr-2"></i> Profil</a></li>
+        <li><a class="dropdown-item" href="<?= url('views/auth/logout.php'); ?>"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a></li>
       </ul>
     </li>
   </ul>
+
 </nav>
 
 <!-- ============================================== -->
