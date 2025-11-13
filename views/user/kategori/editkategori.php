@@ -1,13 +1,11 @@
 <?php
 // ==============================================
 // File: views/user/kategori/editkategori.php
-// Deskripsi: Form edit kategori CMS Mahdi
+// Deskripsi: Form Edit Kategori (2 kolom layout) CMS Mahdi
 // ==============================================
 
-require_once __DIR__ . '/../../../includes/path.php';
-require_once INCLUDES_PATH . 'konfig.php';
-require_once INCLUDES_PATH . 'koneksi.php';
-require_once INCLUDES_PATH . 'ceksession.php';
+require_once dirname(__DIR__, 3) . '/includes/ceksession.php';
+require_once dirname(__DIR__, 3) . '/includes/koneksi.php';
 
 // Ambil id kategori dari GET
 $id = intval($_GET['id'] ?? 0);
@@ -20,61 +18,132 @@ $data = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 if (!$data) {
-  echo "<script>alert('Kategori tidak ditemukan'); window.location='dashboard.php?hal=user/daftarkategori';</script>";
+  echo "<script>alert('Kategori tidak ditemukan'); window.location='dashboard.php?hal=kategori/daftarkategori';</script>";
   exit;
 }
 ?>
 
-<div class="content-wrapper">
-  <section class="content-header">
-    <h1><i class="fas fa-edit"></i> Edit Kategori</h1>
-  </section>
-
+<div class="content-wrapper p-3">
   <section class="content">
-    <div class="card card-warning">
-      <div class="card-header bg-gradient-warning">
-        <h3 class="card-title"><i class="fas fa-edit"></i> Form Edit Kategori</h3>
-      </div>
-
-      <form action="views/user/kategori/proseskategori.php" method="POST">
-        <input type="hidden" name="idkategori" value="<?= $data['idkategori']; ?>">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>Nama Kategori</label>
-                <input type="text" name="namakategori" class="form-control" value="<?= htmlspecialchars($data['namakategori']); ?>" required>
-              </div>
-
-              <div class="form-group">
-                <label>Deskripsi</label>
-                <textarea name="deskripsi" class="form-control" rows="4"><?= htmlspecialchars($data['deskripsi']); ?></textarea>
-              </div>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- ================== KOLOM KIRI (FORM EDIT) ================== -->
+        <div class="col-md-4">
+          <div class="card card-warning">
+            <div class="card-header bg-gradient-warning">
+              <h3 class="card-title"><i class="fas fa-edit"></i> Form Edit Kategori</h3>
             </div>
+
+            <form action="views/user/kategori/proseskategori.php" method="POST">
+              <input type="hidden" name="idkategori" value="<?= $data['idkategori']; ?>">
+
+              <div class="card-body">
+                <div class="form-group">
+                  <label>Nama Kategori</label>
+                  <input type="text" name="namakategori" class="form-control"
+                         value="<?= htmlspecialchars($data['namakategori']); ?>" required>
+                </div>
+
+                <div class="form-group">
+                  <label>Deskripsi</label>
+                  <textarea name="deskripsi" class="form-control" rows="4"><?= htmlspecialchars($data['deskripsi']); ?></textarea>
+                </div>
+              </div>
+
+              <div class="card-footer text-right">
+                <a href="dashboard.php?hal=kategori/daftarkategori" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-arrow-left"></i> Kembali
+                </a>
+                <button type="reset" class="btn btn-warning btn-sm">
+                  <i class="fas fa-retweet"></i> Reset
+                </button>
+                <button type="submit" name="aksi" value="update" class="btn btn-primary btn-sm">
+                  <i class="fas fa-save"></i> Simpan Perubahan
+                </button>
+              </div>
+            </form>
           </div>
         </div>
 
-        <!-- Footer kanan bawah -->
-        <div class="card-footer text-right">
-          <!-- Tombol Kembali -->
-          <a href="dashboard.php?hal=kategori/daftarkategori"
-            class="btn btn-secondary btn-sm">
-            <i class="fas fa-arrow-left"></i> Kembali
-          </a>
+        <!-- ================== KOLOM KANAN (DAFTAR KATEGORI) ================== -->
+        <div class="col-md-8">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <h5 class="m-0">Daftar Kategori</h5>
+              <div class="ml-auto">
+                <a href="dashboard.php?hal=kategori/daftarkategori" class="btn btn-light btn-sm text-primary fw-bold" style="font-size: 1rem;">
+                  <i class="fa fa-sync"></i> Refresh
+                </a>
+              </div>
+            </div>
 
-          <!-- Tombol Reset -->
-          <button type="reset" class="btn btn-warning btn-sm">
-            <i class="fas fa-retweet"></i> Reset
-          </button>
+            <div class="card-body table-responsive">
+              <table class="table table-bordered table-striped align-middle mb-0">
+                <thead class="text-center bg-light">
+                  <tr>
+                    <th style="width:5%">No</th>
+                    <th>Nama Kategori</th>
+                    <th>Deskripsi</th>
+                    <th style="width:15%">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+                  $no = 1;
+                  $query = "SELECT * FROM kategori ORDER BY idkategori DESC";
+                  $hasil = mysqli_query($koneksi, $query);
 
-          <!-- Tombol Simpan -->
-          <button type="submit" name="aksi" value="update"
-            class="btn btn-primary btn-sm">
-            <i class="fas fa-save"></i> Simpan Perubahan
-          </button>
+                  while ($row = mysqli_fetch_assoc($hasil)): ?>
+                    <tr>
+                      <td class="text-center"><?= $no++; ?></td>
+                      <td><?= htmlspecialchars($row['namakategori']); ?></td>
+                      <td><?= htmlspecialchars($row['deskripsi']); ?></td>
+                      <td class="text-center">
+                        <a href="dashboard.php?hal=kategori/editkategori&id=<?= $row['idkategori']; ?>"
+                           class="btn btn-warning btn-sm me-1" title="Edit">
+                          <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="views/user/kategori/proseskategori.php?aksi=hapus&id=<?= $row['idkategori']; ?>"
+                           onclick="return confirm('Yakin ingin menghapus kategori ini?')"
+                           class="btn btn-danger btn-sm" title="Hapus">
+                          <i class="fa fa-trash"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  <?php endwhile; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-
-      </form>
+        <!-- ================== END KOLOM ================== -->
+      </div>
     </div>
   </section>
 </div>
+
+<style>
+  .content-wrapper {
+    background-color: #f4f6f9;
+    min-height: 100vh;
+  }
+
+  .card {
+    border-radius: 0.5rem;
+  }
+
+  .card-title {
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    .col-md-4, .col-md-8 {
+      flex: 100%;
+      max-width: 100%;
+    }
+
+    table th, table td {
+      font-size: 0.85rem;
+    }
+  }
+</style>

@@ -52,10 +52,11 @@ require_once INCLUDES_PATH . 'ceksession.php';
           </button>
 
           <!-- Tombol Simpan -->
-          <button type="submit" name="aksi" value="update"
+          <button type="submit" name="aksi" value="tambah"
             class="btn btn-primary btn-sm">
-            <i class="fas fa-save"></i> Simpan Perubahan
+            <i class="fas fa-save"></i> Simpan
           </button>
+
         </div>
       </form>
     </div>
