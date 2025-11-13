@@ -19,6 +19,41 @@ $folderUpload = dirname(__DIR__, 3) . '/uploads/konten/';
 $iduser = $_SESSION['iduser'] ?? 0;
 
 // =====================================================
+// TAMBAH KATEGORI (AJAX dari halaman tambah konten)
+// =====================================================
+if ($aksi === 'tambah_kategori_ajax') {
+    header('Content-Type: application/json');
+    $namaKategori = trim($_POST['namakategori'] ?? '');
+    $deskripsi    = trim($_POST['deskripsi'] ?? '');
+
+    if ($namaKategori === '') {
+        echo json_encode(['status' => 'error', 'pesan' => 'Nama kategori wajib diisi']);
+        exit;
+    }
+
+    // Cek duplikat nama kategori
+    $cek = $koneksi->prepare("SELECT idkategori FROM kategori WHERE LOWER(namakategori) = LOWER(?) LIMIT 1");
+    $cek->bind_param("s", $namaKategori);
+    $cek->execute();
+    $result = $cek->get_result();
+    if ($result->num_rows > 0) {
+        echo json_encode(['status' => 'error', 'pesan' => 'Kategori sudah ada']);
+        exit;
+    }
+    $cek->close();
+
+    // Simpan kategori baru
+    $stmt = $koneksi->prepare("INSERT INTO kategori (namakategori, deskripsi, tanggalbuat) VALUES (?, ?, NOW())");
+    $stmt->bind_param("ss", $namaKategori, $deskripsi);
+    $stmt->execute();
+    $newId = $stmt->insert_id;
+    $stmt->close();
+
+    echo json_encode(['status' => 'sukses', 'idkategori' => $newId, 'namakategori' => $namaKategori]);
+    exit;
+}
+
+// =====================================================
 // TAMBAH KONTEN
 // =====================================================
 if ($aksi === 'tambah') {

@@ -15,8 +15,8 @@ require_once INCLUDES_PATH . 'ceksession.php';
 
   <section class="content">
     <div class="card card-success">
-      <div class="card-header bg-gradient-success">
-        <h3 class="card-title"><i class="fas fa-plus-circle"></i> Form Tambah Konten</h3>
+      <div class="card-header bg-gradient-success d-flex justify-content-between align-items-center">
+        <h3 class="card-title mb-0"><i class="fas fa-plus-circle"></i> Form Tambah Konten</h3>
       </div>
 
       <form action="views/user/konten/proseskonten.php" method="POST" enctype="multipart/form-data">
@@ -36,15 +36,22 @@ require_once INCLUDES_PATH . 'ceksession.php';
 
               <div class="form-group">
                 <label>Kategori</label>
-                <select name="idkategori" class="form-control" required>
-                  <option value="">-- Pilih Kategori --</option>
-                  <?php
-                  $res = mysqli_query($koneksi, "SELECT * FROM kategori ORDER BY namakategori ASC");
-                  while ($row = mysqli_fetch_assoc($res)) {
-                      echo "<option value='{$row['idkategori']}'>" . htmlspecialchars($row['namakategori']) . "</option>";
-                  }
-                  ?>
-                </select>
+                <div class="input-group">
+                  <select id="idkategori" name="idkategori" class="form-control" required>
+                    <option value="">-- Pilih Kategori --</option>
+                    <?php
+                    $res = mysqli_query($koneksi, "SELECT * FROM kategori ORDER BY namakategori ASC");
+                    while ($row = mysqli_fetch_assoc($res)) {
+                        echo "<option value='{$row['idkategori']}'>" . htmlspecialchars($row['namakategori']) . "</option>";
+                    }
+                    ?>
+                  </select>
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#modalTambahKategori">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">
@@ -83,7 +90,41 @@ require_once INCLUDES_PATH . 'ceksession.php';
   </section>
 </div>
 
+<!-- =======================
+MODAL TAMBAH KATEGORI
+======================= -->
+<div class="modal fade" id="modalTambahKategori" tabindex="-1" role="dialog" aria-labelledby="modalTambahKategoriLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white py-2">
+        <h5 class="modal-title mb-0" id="modalTambahKategoriLabel"><i class="fas fa-plus-circle"></i> Tambah Kategori</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group mb-2">
+          <label>Nama Kategori</label>
+          <input type="text" id="kategoriBaru" class="form-control form-control-sm" placeholder="Masukkan nama kategori">
+        </div>
+        <div class="form-group mb-0">
+          <label>Deskripsi (opsional)</label>
+          <textarea id="deskripsiKategori" class="form-control form-control-sm" rows="2" placeholder="Deskripsi singkat"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal"><i class="fas fa-times"></i> Batal</button>
+        <button type="button" id="btnSimpanKategori" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =======================
+SCRIPT TAMBAHAN
+======================= -->
 <script>
+// Preview gambar
 document.getElementById('gambarInput').addEventListener('change', function(e){
   const file = e.target.files[0];
   if(file){
@@ -94,5 +135,40 @@ document.getElementById('gambarInput').addEventListener('change', function(e){
     reader.readAsDataURL(file);
   }
 });
-</script>
 
+// Tambah kategori via AJAX
+document.getElementById('btnSimpanKategori').addEventListener('click', function(){
+  const nama = document.getElementById('kategoriBaru').value.trim();
+  const desk = document.getElementById('deskripsiKategori').value.trim();
+
+  if (nama === '') {
+    alert('Nama kategori tidak boleh kosong!');
+    return;
+  }
+
+  fetch('views/user/konten/proseskonten.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'aksi=tambah_kategori_ajax&namakategori=' + encodeURIComponent(nama) + '&deskripsi=' + encodeURIComponent(desk)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'sukses') {
+      const select = document.getElementById('idkategori');
+      const option = new Option(data.namakategori, data.idkategori, true, true);
+      select.add(option);
+
+      // Reset dan tutup modal
+      document.getElementById('kategoriBaru').value = '';
+      document.getElementById('deskripsiKategori').value = '';
+      $('#modalTambahKategori').modal('hide');
+    } else {
+      alert(data.pesan || 'Gagal menambah kategori.');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Terjadi kesalahan koneksi.');
+  });
+});
+</script>
