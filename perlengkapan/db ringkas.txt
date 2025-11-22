@@ -1,0 +1,45 @@
+
+
++-------------------+
+|       admin       |
++-------------------+
+| idadmin (PK)      |
+| nama              |
+| username          |
+| password          |
+| level (enum: admin, editor)
++-------------------+
+
++-------------------+
+|     kategori      |
++-------------------+
+| idkategori (PK)   |
+| namakategori      |
+| deskripsi         |
++-------------------+
+
++-------------------+
+|       konten      |
++-------------------+
+| idkonten (PK)     |
+| idkategori (FK)   → kategori.idkategori
+| idadmin (FK)      → admin.idadmin
+| judul             |
+| isi               |
+| tanggal           |
+| gambar            |
+| tag               |
+| dilihat           |
+| status (enum: publik, draft)
++-------------------+
+
++-------------------+
+|       pesan       |
++-------------------+
+| idpesan (PK)      |
+| nama              |
+| email             |
+| subjek            |
+| isi               |
+| tanggal           |
++-------------------+

@@ -89,8 +89,9 @@ $current_page = $_GET['hal'] ?? '';
           </a>
         </li>
 
+        <!-- Menu Laporan untuk Editor -->
         <li class="nav-item">
-          <a href="dashboard.php?hal=laporan/laporanharian" class="nav-link <?= (strpos($current_page, 'laporan') === 0) ? 'active' : ''; ?>">
+          <a href="dashboard.php?hal=laporan/daftarlaporan" class="nav-link <?= (strpos($current_page, 'laporan') === 0) ? 'active' : ''; ?>">
             <i class="nav-icon fas fa-chart-bar"></i>
             <p>Laporan</p>
           </a>

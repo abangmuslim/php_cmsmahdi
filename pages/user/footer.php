@@ -39,28 +39,56 @@
         }
       });
 
-      
       // Tooltip FontAwesome
       $('[data-toggle="tooltip"]').tooltip();
     });
   </script>
+
   <script src="asset/pluggin/summernote/summernote-bs4.min.js"></script>
-<script>
-  $(document).ready(function() {
-    $('.summernote').summernote({
-      height: 250,
-      toolbar: [
-        ['style', ['bold', 'italic', 'underline', 'clear']],
-        ['font', ['strikethrough', 'superscript', 'subscript']],
-        ['fontsize', ['fontsize']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['insert', ['link', 'picture', 'video']],
-        ['view', ['fullscreen', 'codeview']]
-      ]
+  <script>
+    $(document).ready(function() {
+      $('.summernote').summernote({
+        height: 250,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['font', ['strikethrough', 'superscript', 'subscript']],
+          ['fontsize', ['fontsize']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview']]
+        ]
+      });
     });
-  });
-</script>
+  </script>
+
+  <!-- Penyesuaian otomatis padding-top agar tidak overlapping saat navbar autohide -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const navbar = document.querySelector('.main-header');
+      const body = document.body;
+
+      function adjustPadding() {
+        const navbarHeight = navbar ? navbar.offsetHeight : 0;
+        body.style.paddingTop = navbarHeight + 'px';
+      }
+
+      // Jalankan saat halaman dimuat
+      adjustPadding();
+
+      // Jalankan juga setiap kali jendela diresize
+      window.addEventListener('resize', adjustPadding);
+
+      // Jalankan juga saat tinggi navbar berubah (misal autohide aktif)
+      let lastHeight = navbar ? navbar.offsetHeight : 0;
+      setInterval(() => {
+        if (navbar && navbar.offsetHeight !== lastHeight) {
+          lastHeight = navbar.offsetHeight;
+          adjustPadding();
+        }
+      }, 300);
+    });
+  </script>
 
 </body>
 </html>

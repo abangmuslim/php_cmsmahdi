@@ -57,7 +57,7 @@ CMSMAHDI/
 │  │  │  └─ editkategori.php
 │  │  │
 │  │  ├─ komentar/
-│  │  │  ├─ proseskomentar.php
+│  │  │  ├─ proseskomentar.php 
 │  │  │  ├─ daftarkomentar.php
 │  │  │  ├─ tambahkomentar.php
 │  │  │  └─ editkomentar.php
@@ -92,6 +92,8 @@ CMSMAHDI/
 │  ├─ fungsiupload.php          ← helper upload gambar (validasi tipe & ukuran)
 │  ├─ fungsivalidasi.php        ← sanitasi input & validasi form
 │  └─ htaccess/                 ← file keamanan .htaccess untuk referensi
+│  │  └─root.htacces
+│  │  └─upload.htaccess
 │
 │
 ├─ database/
